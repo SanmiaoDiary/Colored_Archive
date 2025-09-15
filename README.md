@@ -11,7 +11,7 @@
 ## 部署本项目
 如果你希望在您的设备上运行这个项目，请按照以下步骤操作：
 1. ### 配置运行环境
-   请确保你的设备上安装了python和pygame库，并确保python的版本为3.13.7及以上如果没有安装python你可以去http://python.org 下载python  
+   请确保你的设备上安装了python和pygame库，并确保python的版本为3.13.7及以上如果没有安装python你可以去[python官网](http://python.org"python官网")下载python  
     然后根据安装程序安装python  
     按windows+R打开运行程序，输入cmd  
     如果你不知道您的设备上是否安装了python  
@@ -37,7 +37,7 @@
 2. ### 下载项目
    您可以从代码托管平台上下载此项目
    目前我们只在两个平台上上传了此项目
-   1. github https://github.com/SanmiaoDiary/Colored_Archive
-   2. gitee https://gitee.com/sanmiaodiary/colored_archive
-   国内用户推荐使用gitee
+   1. [github](https://github.com/SanmiaoDiary/Colored_Archive"github")
+   2. [gitee](https://gitee.com/sanmiaodiary/colored_archive"gitee")  
+   因为网络原因github仓库可能更新不及时，国内用户推荐使用gitee
    
