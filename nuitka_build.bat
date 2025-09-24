@@ -1,0 +1,1 @@
+python -m nuitka --standalone --onefile --windows-disable-console --windows-icon-from-ico=image\slanted_logo.ico --output-dir=Release --output-filename=BlueArchive_win_client_v.exe --remove-output --assume-yes-for-downloads main.py
