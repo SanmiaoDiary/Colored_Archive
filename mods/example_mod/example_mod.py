@@ -4,7 +4,7 @@
 #你可以仿照它写代码
 #我建议你复制一份再在上面修改
 import pygame
-from water import modapi
+from modules.water import water
 
 
 pygame.init() #初始化pygame

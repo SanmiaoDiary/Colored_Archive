@@ -9,20 +9,22 @@ pygame.init() #初始化pygame
 
 screen = pygame.display.set_mode((1080, 600),pygame.RESIZABLE|pygame.SCALED)#设置屏幕大小
 pygame.display.set_caption("Colored Archive")#设置窗口标题
-logo = pygame.image.load(r"image\slanted_logo.ico").convert_alpha()
+logo = pygame.image.load(r".\assets\images\slanted_logo.png").convert_alpha()
 pygame.display.set_icon(logo)
-font = pygame.font.Font(r".\fonts\Minecraft AE(支持中文).ttf", 15)#引入字体类型 和字号
+font = pygame.font.Font(r".\assets\fonts\Minecraft AE(支持中文).ttf", 15)#引入字体类型 和字号
 text = font.render("Colored Archive", True, (0, 0, 0),(255,255,255))#创建文字 文字内容 是否抗锯齿 颜色
 textRect =text.get_rect()#获取文字的矩形坐标
 textRect.center = (60, 600-20)#设置文字位置和坐标
 screen.blit(text, textRect)#绘制文字
+dark_blue = (0,0,139)#创建深蓝色
+light_blue_translucent = (173,216,230,128)#创建淡蓝色（半透明）
 
 #初始化modapi
 modapi = None
 try:#尝试导入modapi
-    from mods.water import water
+    from modules.water import water
     modapi = water.Mod.loading_mods(screen)#示例化modapi Lading_mods类下的loading_mods方法，并把screen赋值给loading_mods
-    print("成功加载mod")
+    print("成功加载modapi——water")
 except Exception as error_information:
     print("【警告】:( 导入modAPI失败")
     print(f"错误原因：{error_information}")
@@ -37,8 +39,8 @@ class Mouse(pygame.sprite.Sprite):#创建鼠标类
 
     def __init__(self):#初始化
         super().__init__()#继承父类
-        self.image = pygame.image.load(r"image\mouse.png").convert_alpha()#创建鼠标图片
-        self.image_selectable = pygame.image.load(r"image\mouse_selectable.png").convert_alpha()#创建鼠标图片
+        self.image = pygame.image.load(r".\assets\images\mouse.png").convert_alpha()#创建鼠标图片
+        self.image_selectable = pygame.image.load(r".\assets\images\mouse_selectable.png").convert_alpha()#创建鼠标图片
         self.rect = self.image.get_rect()#获取鼠标的rect对象
         
         
@@ -50,6 +52,10 @@ class Mouse(pygame.sprite.Sprite):#创建鼠标类
         else:
             screen.blit(self.image,mouse_pos)#绘制鼠标
     
+    def select_area(self,start_draw_x,start_draw_y):#绘制鼠标选择区域
+        self.start_draw_x,self.start_draw_y = start_draw_x,start_draw_y#获取鼠标选择区域左上角坐标
+
+        
 
 class Character():#创建角色类
     game_all_characters = {0:"cat",10010:"Sunaookami_Shiroko"}
@@ -63,29 +69,30 @@ class Character():#创建角色类
     characters_command_list = {0:["run","fire_mode","fire_strategy","open_backpack","fire_suppression"],#所有允许存在的角色可以执行的命令
                                10010:["run","fire_mode","fire_strategy","open_backpack","fire_suppression"]}
     #run:跑 fire_mode:开火模式 fire_strategy:开火策略 open_backpack:打开背包 fire_suppression:火力压制
-
+    armored_type = {0:"no_armor",1:"light_armor",2:"medium_armor",3:"heavy_armor",4:"tank"}#角色护甲类型
+    #0：没有装甲 1：轻型装甲 2：中型装甲 3：重型装甲 4：坦克
     characters_HP = {0:100,10010:100}#所有允许存在的角色的生命值
     all_characters = []#所有在地图上出现的角色 储存所有出现的角色的名字
     
     def __init__(self,x,y,id):#初始化
         self.name = self#创建角色名称
         
-        if id == Character.game_all_characters: #如果角色的id等于游戏允许拥有角色的id
-            print("【错误】角色创建失败：地图上已存在同名角色") #提示角色已经在地图上存在
-            return
-        else:        
-            Character.all_characters.append(self)#把角色加入到所有角色列表
-            allow_click.append(self)#允许鼠标点击角色
 
+        if id in Character.game_all_characters: #如果角色的id等于游戏允许拥有角色的id
+            print("【错误】角色创建失败：地图上已存在同名角色！") #提示角色已经在地图上存在
+            pass#跳出执行
+               
+        Character.all_characters.append(self)#把角色加入到所有角色列表
+        allow_click.append(self)#允许鼠标点击角色
         self.speed = Character.characters_speed[id]#获取角色移动速度
         self.HP = Character.characters_HP[id]
-        self.character = pygame.image.load(r"image\cat.png").convert_alpha()#创建角色图片
-        self.selection_marker = pygame.image.load(r".\image\character_selection_marker.png").convert_alpha()#创建一个角色选中标记
+        self.character = pygame.image.load(r".\assets\images\cat.png").convert_alpha()#创建角色图片
+        self.selection_marker = pygame.image.load(r".\assets\images\character_selection_marker.png").convert_alpha()#创建一个角色选中标记
         self.character_rect = self.character.get_rect()#获取角色的矩形坐标
         self.character_rect.x,self.character_rect.y = x,y#初始化创建角色的位置
         self.selected = False#设置角色是否被选中
         self.destination_x,self.destination_y = self.character_rect.x,self.character_rect.y#创建角色目的地坐标
-
+        print("【提示】角色创建成功！")
     def update(self,frame_occupancy_time):#更新角色和选中标记 screen:绘制在主窗口上
         if (self.destination_x,self.destination_y) != (self.character_rect.x,self.character_rect.y):#角色没有到达目的地就继续向目的地移动
             destination = math.hypot(self.destination_x - self.character_rect.x , self.destination_y - self.character_rect.y)#获取角色到目的地的距离
@@ -106,47 +113,55 @@ class Character():#创建角色类
 
     def select(self):#角色被选中
         self.selected = True#设置角色被选中
-        print("【提示】角色被选中")
+        print("【提示】角色被选中！")
 
     def deselect(self):#角色被取消选中
         self.selected = False#设置角色被取消选中
-        print("【提示】角色被取消选中")
+        print("【提示】角色被取消选中！")
 
 class Enemy():#创建敌人类
     game_all_enemys = {10:"block_robot",11:"self_detonating_block_robot"}#游戏允许出现的敌人 
     #编号涵义：xx 第一个数字：1：方块机器人系列 第二个数字：在这个系列里面的第几个
+    game_all_enemys_hp = {10:440,11:440}#存储所有允许存在的敌人生命值
     all_enemys_hp = {10:100,11:100}#存储所有允许存在的敌人生命值
+    all_enemys_speed = {10:120,11:120}#存储所有允许存在的敌人移动速度
     total_number_of_enemies = 0#敌人总数
     armored_type = {0:"no_armor",1:"light_armor",2:"medium_armor",3:"heavy_armor",4:"tank"}#敌人护甲类型
     #0：没有装甲 1：轻型装甲 2：中型装甲 3：重型装甲 4：坦克
     all_enemys = []
-    def __init__(self,type_of_troops):#初始化 type_of_troops:敌人所在的部队类型（不同部队的敌人策略不同）
+    def __init__(self,x,y,type_of_troops,id):#初始化 type_of_troops:敌人所在的部队类型（不同部队的敌人策略不同）
         self.name = self
         self.id = 10
         
         if Enemy.total_number_of_enemies >= Character.total_number_of_characters * 5:#如果敌人总数大于等于角色总数*5就停止创建敌人
-            print("【警告】地图上敌人总数已达到上限")
+            print("【警告】敌人创建失败，地图上敌人总数已达到上限！")
             pass
         else:
             Enemy.all_enemys.append(self)#把敌人加入到所有敌人列表
-            Enemy.total_number_of_enemies += 1
+            Enemy.total_number_of_enemies += 1#敌人总数加1
             self.type_of_troops = type_of_troops#创建一个变量来存储这个敌人所属的部队类型 方便后面判断敌人策略
         
+        self.enemy = pygame.image.load(r"\assets\images\cat.png").convert_alpha()#创建敌人图片
+        self.enemy_rect = self.enemy.get_rect()#获取敌人矩形坐标
+        self.enemy_rect.x,self.enemy_rect.y = x,y#初始化创建敌人的位置
+        self.hp = Enemy.game_all_enemys_hp[id]#获取敌人生命值
+        self.speed = Enemy.game_all_enemys_speed[id]#获取敌人移动速度
+        self.armored_type = Enemy.armored_type[id]#获取敌人护甲类型
+        print("【提示】敌人创建成功！")
     def update(self):
+        screen.blit(self.enemy, (self.enemy_rect.x,self.enemy_rect.y))#绘制测试敌人
         if self.type_of_troops == "defense_troops":#如果是防御部队策略应该更偏向防守
             pass
         elif self.type_of_troops == "patrol_troops":#如果是巡逻部队策略应该更偏向进攻
             pass
-    
+        
+        if self.hp <= 0: #敌人生命值小于等于0
+            self.all_enemys.remove(self)#删除敌人
+            allow_click.remove(self)#不允许鼠标点击敌人
+        
+
     def reinforcement(self):
         pass
-
-# def create_enemy():
-#     if Enemy.type_of_troops == "defense_troops":#
-#         enemy_name = "enemy_" + str(Enemy.total_number_of_enemies)
-#         enemy_name = Enemy("defense_troops")
-#     elif Enemy.type_of_troops == "patrol_troops":
-#         pass
 
 class Gun():#创建枪类
 
@@ -179,19 +194,24 @@ while runing == True: #游戏循环
                 else:
                     screen = pygame.display.set_mode((1080,600),pygame.RESIZABLE)
         
-        # 是否选中角色逻辑判断
+        # 是否选中角色/角色是否要移动逻辑判断
         for character in Character.all_characters:#遍历所有角色
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: #如果鼠标左键被按下
                 if character.character_rect.collidepoint(pygame.mouse.get_pos()): #如果鼠标在角色上
-                    
                     if character.selected == True: #如果角色被选中那就取消选中
                         character.deselect()
                     else:#如果角色没有被选中那就选中角色
                         character.select()
                 else: #如果鼠标不在角色上被点击
-                    cat.destination_x,cat.destination_y = (pygame.mouse.get_pos())#记录下鼠标位置方便移动
-                    character.deselect()#取消角色选中方便玩家选中其他角色进行移动
-            
+                    if character.selected == True: #如果角色被选中
+                        character.destination_x,character.destination_y = (pygame.mouse.get_pos())#记录下鼠标位置方便移动
+                        character.deselect()#取消角色选中方便玩家选中其他角色进行移动
+                    else: #如果角色没有被选中
+                        start_drawing_x,start_drawing_y = pygame.mouse.get_pos()#记录下鼠标位置方便之后绘制选中角色的方框
+                        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and pygame.mouse.get_pos() != (start_drawing_x,start_drawing_y):#如果鼠标移动了
+                            while event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#在鼠标放开之前一直循环绘制方框
+                                Mouse.select_area() #绘制选中角色方框
+
     screen.fill((240, 240, 240))#填充屏幕（相当于清屏） 
     frame_occupancy_time = clock.tick(fps) / 1000.0#获取帧占用时间
     cat.update(frame_occupancy_time)#更新角色
