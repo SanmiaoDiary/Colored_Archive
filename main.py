@@ -8,6 +8,7 @@ import random#导入随机模块
 pygame.init() #初始化pygame
 
 screen = pygame.display.set_mode((1080, 600),pygame.RESIZABLE|pygame.SCALED)#设置屏幕大小
+transparent_screen = pygame.Surface((1080, 600),pygame.SRCALPHA)#创建一个半透明的屏幕(用来绘制半透明的颜色)
 pygame.display.set_caption("Colored Archive")#设置窗口标题
 logo = pygame.image.load(r".\assets\images\slanted_logo.png").convert_alpha()
 pygame.display.set_icon(logo)
@@ -34,6 +35,7 @@ clock = pygame.time.Clock()
 fullscreen = False
 fps = 60#默认最高60帧
 allow_click = []#所有允许点击的元素列表
+draw_area = False#绘制区域
 
 class Mouse(pygame.sprite.Sprite):#创建鼠标类
 
@@ -54,8 +56,38 @@ class Mouse(pygame.sprite.Sprite):#创建鼠标类
     
     def select_area(self,start_draw_x,start_draw_y):#绘制鼠标选择区域
         self.start_draw_x,self.start_draw_y = start_draw_x,start_draw_y#获取鼠标选择区域左上角坐标
+        self.now_x,self.now_y = (pygame.mouse.get_pos())
+        if self.start_draw_x >= self.now_x:
+            if self.start_draw_y >= self.now_y:
+                self.rect_width = self.start_draw_x - self.now_x#获取鼠标选择区域宽
+                self.rect_height = self.start_draw_y - self.now_y#获取鼠标选择区域高
+                self.rect_x = self.now_x#获取鼠标选择区域左上角x坐标
+                self.rect_y = self.now_y#获取鼠标选择区域左上角y坐标
+            elif self.start_draw_y < self.now_y:
+                self.area_drawing_location = "bottom_left"
+                self.rect_width = self.start_draw_x - self.now_x#获取鼠标选择区域宽
+                self.rect_height = self.now_y - self.start_draw_y#获取鼠标选择区域高
+                self.rect_x = self.now_x#获取鼠标选择区域左上角x坐标
+                self.rect_y = self.start_draw_y#获取鼠标选择区域左上角y坐标
+        if self.start_draw_x <= self.now_x:
+            if self.start_draw_y >= self.now_y:
+                self.area_drawing_location = "top_right"
+                self.rect_width = self.now_x - self.start_draw_x#获取鼠标选择区域宽
+                self.rect_height = self.start_draw_y - self.now_y#获取鼠标选择区域高
+                self.rect_x = self.start_draw_x#获取鼠标选择区域左上角x坐标
+                self.rect_y = self.now_y#获取鼠标选择区域左上角y坐标
+            elif self.start_draw_y < self.now_y:
+                self.area_drawing_location = "bottom_right"
+                self.rect_width = self.now_x - self.start_draw_x#获取鼠标选择区域宽
+                self.rect_height = self.now_y - self.start_draw_y#获取鼠标选择区域高
+                self.rect_x = self.start_draw_x#获取鼠标选择区域左上角x坐标
+                self.rect_y = self.start_draw_y
 
+        self.selected_area_rect = pygame.Rect(self.rect_x,self.rect_y,self.rect_width,self.rect_height)       
+        self.selected_area = pygame.draw.rect(screen,dark_blue,(self.rect_x,self.rect_y,self.rect_width,self.rect_height),1)#绘制鼠标选择区域的边框
+        pygame.draw.rect(transparent_screen,light_blue_translucent,(self.rect_x-1,self.rect_y-1,self.rect_width-2,self.rect_height-2))#绘制鼠标选择区域的填充部分
         
+
 
 class Character():#创建角色类
     game_all_characters = {0:"cat",10010:"Sunaookami_Shiroko"}
@@ -77,8 +109,7 @@ class Character():#创建角色类
     def __init__(self,x,y,id):#初始化
         self.name = self#创建角色名称
         
-
-        if id in Character.game_all_characters: #如果角色的id等于游戏允许拥有角色的id
+        if id in Character.all_characters: #如果角色的id等于现在地图上有了的角色
             print("【错误】角色创建失败：地图上已存在同名角色！") #提示角色已经在地图上存在
             pass#跳出执行
                
@@ -193,7 +224,8 @@ while runing == True: #游戏循环
                     screen = pygame.display.set_mode((0, 0),pygame.FULLSCREEN|pygame.HWSURFACE|pygame.DOUBLEBUF)
                 else:
                     screen = pygame.display.set_mode((1080,600),pygame.RESIZABLE)
-        
+                screen_width,screen_height = screen.get_size()#获取屏幕宽高
+                transparent_screen = pygame.Surface((screen_width, screen_height),pygame.SRCALPHA)#重新创建一个透明背景
         # 是否选中角色/角色是否要移动逻辑判断
         for character in Character.all_characters:#遍历所有角色
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: #如果鼠标左键被按下
@@ -206,16 +238,27 @@ while runing == True: #游戏循环
                     if character.selected == True: #如果角色被选中
                         character.destination_x,character.destination_y = (pygame.mouse.get_pos())#记录下鼠标位置方便移动
                         character.deselect()#取消角色选中方便玩家选中其他角色进行移动
-                    else: #如果角色没有被选中
-                        start_drawing_x,start_drawing_y = pygame.mouse.get_pos()#记录下鼠标位置方便之后绘制选中角色的方框
-                        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and pygame.mouse.get_pos() != (start_drawing_x,start_drawing_y):#如果鼠标移动了
-                            while event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#在鼠标放开之前一直循环绘制方框
-                                Mouse.select_area() #绘制选中角色方框
+                    
+    
 
-    screen.fill((240, 240, 240))#填充屏幕（相当于清屏） 
+    screen.fill((240, 240, 240))#填充屏幕（相当于清屏）
+    transparent_screen.fill((0,0,0,0)) #填充透明屏幕
+
     frame_occupancy_time = clock.tick(fps) / 1000.0#获取帧占用时间
     cat.update(frame_occupancy_time)#更新角色
-     
+
+    # 绘制选中角色方框
+    
+    if pygame.mouse.get_pressed()[0] == True:#判断是否点击了鼠标左键
+        if draw_area == False:#如果没有正在绘制
+            start_drawing_x,start_drawing_y = pygame.mouse.get_pos()#记录下鼠标位置方便之后绘制选中角色的方框
+            draw_area = True
+        elif draw_area == True:#如果正在绘制
+            game_mouse.select_area(start_drawing_x,start_drawing_y)
+    else:
+        draw_area = False
+
+    screen.blit(transparent_screen, (0,0))#绘制透明屏幕
     show_fps = font.render("FPS: " + str(int(clock.get_fps())), True,(0, 0, 0),(255,225,225))
     textRect =show_fps.get_rect()#获取文字的矩形坐标
     textRect.center = (40, 10)#设置文字位置和坐标
