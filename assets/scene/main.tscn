@@ -1,0 +1,23 @@
+[gd_scene load_steps=7 format=3 uid="uid://c7whaftv5t88s"]
+
+[ext_resource type="PackedScene" uid="uid://d27uy1map1qhr" path="res://assets/scene/HUD.tscn" id="1_821e4"]
+[ext_resource type="Script" uid="uid://bywycs2rpu3v" path="res://assets/code/main.gd" id="1_tb8ar"]
+[ext_resource type="PackedScene" uid="uid://2ijmj0igyrpu" path="res://assets/scene/character.tscn" id="3_0nmyk"]
+[ext_resource type="Script" uid="uid://bgir8hj1tmyn3" path="res://assets/code/HUD.gd" id="3_0vk0l"]
+[ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
+[ext_resource type="PackedScene" uid="uid://cemux1eldrcxn" path="res://assets/scene/map.tscn" id="6_fw18y"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_tb8ar")
+
+[node name="HUD" parent="." instance=ExtResource("1_821e4")]
+script = ExtResource("3_0vk0l")
+
+[node name="character" parent="." instance=ExtResource("3_0nmyk")]
+
+[node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
+visible = false
+
+[node name="Node2D" parent="." instance=ExtResource("6_fw18y")]
+
+[connection signal="start_a_game" from="." to="HUD" method="_on_main_start_a_game"]

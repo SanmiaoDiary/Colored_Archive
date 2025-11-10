@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3 uid="uid://d27uy1map1qhr"]
+
+[ext_resource type="FontFile" uid="uid://c7eipmswlp2f2" path="res://assets/fonts/Minecraft AE(支持中文).ttf" id="1_7vlf7"]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="show FPS" type="Label" parent="."]
+offset_left = 13.0
+offset_top = 12.0
+offset_right = 93.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+text = "FPS:"
+
+[node name="mission countdown" type="Node" parent="."]
+
+[node name="mission countdown backgrand" type="ColorRect" parent="mission countdown"]
+offset_left = 43.0
+offset_top = 51.0
+offset_right = 186.0
+offset_bottom = 98.0
+color = Color(0.2363343, 0.2363342, 0.2363342, 0.49803922)
+
+[node name="show mission countdown" type="Label" parent="mission countdown"]
+offset_left = 50.0
+offset_top = 59.0
+offset_right = 178.0
+offset_bottom = 91.0
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+text = "40：00"
+
+[node name="mission countdown Timer" type="Timer" parent="mission countdown/show mission countdown"]
+wait_time = 2400.0
+
+[node name="credit points" type="Node" parent="."]
+
+[node name="credit points backgrand" type="ColorRect" parent="credit points"]
+offset_left = 194.0
+offset_top = 52.0
+offset_right = 337.0
+offset_bottom = 99.0
+color = Color(0.2363343, 0.2363342, 0.2363342, 0.49803922)
+
+[node name="show credit points" type="Label" parent="credit points"]
+offset_left = 255.0
+offset_top = 60.0
+offset_right = 332.0
+offset_bottom = 92.0
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+text = "999"
+
+[node name="credit points ico" type="TextureRect" parent="credit points"]
+offset_left = 202.0
+offset_top = 55.0
+offset_right = 242.0
+offset_bottom = 95.0
+
+[node name="chrysoberyl" type="Node" parent="."]
+
+[node name="chrysoberyl backgrand" type="ColorRect" parent="chrysoberyl"]
+offset_left = 346.0
+offset_top = 52.0
+offset_right = 489.0
+offset_bottom = 99.0
+color = Color(0.2363343, 0.2363342, 0.2363342, 0.49803922)
+
+[node name="show chrysoberyl" type="Label" parent="chrysoberyl"]
+offset_left = 403.0
+offset_top = 60.0
+offset_right = 480.0
+offset_bottom = 92.0
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+text = "999"
+
+[node name="chrysoberyl ico" type="TextureRect" parent="chrysoberyl"]
+offset_left = 355.0
+offset_top = 55.0
+offset_right = 395.0
+offset_bottom = 95.0
+
+[node name="show mission condition" type="Node" parent="."]
+
+[node name="mission condtion ico" type="TextureRect" parent="show mission condition"]
+offset_left = 59.0
+offset_top = 124.0
+offset_right = 99.0
+offset_bottom = 164.0
+
+[node name="mission name" type="Label" parent="show mission condition"]
+offset_left = 122.0
+offset_top = 126.0
+offset_right = 410.0
+offset_bottom = 164.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+text = "消灭所有机器人工厂"
+
+[node name="mission content" type="Label" parent="show mission condition"]
+offset_left = 56.0
+offset_top = 181.0
+offset_right = 419.0
+offset_bottom = 276.0
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 20
+text = "消灭所有机器人工厂(0/6)"
