@@ -18,6 +18,7 @@ texture = ExtResource("1_w4huj")
 shape = SubResource("CapsuleShape2D_rhor0")
 
 [node name="character selection box" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("1_x6quy")
 
 [node name="mouse" type="Area2D" parent="."]

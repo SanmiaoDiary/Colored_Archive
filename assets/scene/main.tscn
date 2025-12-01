@@ -14,10 +14,14 @@ script = ExtResource("1_tb8ar")
 script = ExtResource("3_0vk0l")
 
 [node name="character" parent="." instance=ExtResource("3_0nmyk")]
+position = Vector2(345, 369)
 
 [node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
-visible = false
+position = Vector2(531, 319)
 
-[node name="Node2D" parent="." instance=ExtResource("6_fw18y")]
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(959, 599)
+
+[node name="map" parent="." instance=ExtResource("6_fw18y")]
 
 [connection signal="start_a_game" from="." to="HUD" method="_on_main_start_a_game"]
