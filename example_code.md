@@ -16,7 +16,9 @@
 第二种情况适合类RTS的移动，只关心鼠标是不是按下了
 1. 检测玩家是否按住了某键
 	```GDscript
-	if Input.is_key_pressed(KEY_W):#需要注意的是KEY_W需要提前在项目设置的输入映射里面设置
+	if Input.is_key_pressed(KEY_W):#这里的KEY_W是godot定死了的，直接输入就好，其他按键都一样是KEY_什么键 的形式
+	pass
+	if Input.is_action_pressed("w_down")#需要注意的是KEY_W需要提前在项目设置的输入映射里面设置
 	```
 2. 检测玩家是否点击某键
 	```GDscript

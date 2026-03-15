@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c7whaftv5t88s"]
+[gd_scene load_steps=8 format=3 uid="uid://c7whaftv5t88s"]
 
 [ext_resource type="PackedScene" uid="uid://d27uy1map1qhr" path="res://assets/scene/HUD.tscn" id="1_821e4"]
 [ext_resource type="Script" uid="uid://bywycs2rpu3v" path="res://assets/code/main.gd" id="1_tb8ar"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bgir8hj1tmyn3" path="res://assets/code/HUD.gd" id="3_0vk0l"]
 [ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
 [ext_resource type="PackedScene" uid="uid://cemux1eldrcxn" path="res://assets/scene/map.tscn" id="6_fw18y"]
+[ext_resource type="Script" uid="uid://b0b7kjiiectpv" path="res://assets/code/gaming_camera_2d.gd" id="6_mqc3k"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_tb8ar")
@@ -14,13 +15,13 @@ script = ExtResource("1_tb8ar")
 script = ExtResource("3_0vk0l")
 
 [node name="character" parent="." instance=ExtResource("3_0nmyk")]
-position = Vector2(345, 369)
 
 [node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
 position = Vector2(531, 319)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(959, 599)
+position = Vector2(960, 600)
+script = ExtResource("6_mqc3k")
 
 [node name="map" parent="." instance=ExtResource("6_fw18y")]
 
