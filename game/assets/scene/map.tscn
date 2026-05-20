@@ -5,3 +5,4 @@
 [node name="map" type="Node2D"]
 
 [node name="TileMapLayer" parent="." instance=ExtResource("1_c3dew")]
+metadata/_edit_lock_ = true

@@ -1,41 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://d27uy1map1qhr"]
+[gd_scene load_steps=7 format=3 uid="uid://d27uy1map1qhr"]
 
 [ext_resource type="FontFile" uid="uid://c7eipmswlp2f2" path="res://assets/fonts/Minecraft AE(支持中文).ttf" id="1_7vlf7"]
+[ext_resource type="StyleBox" uid="uid://7pmrli85htjn" path="res://assets/styles/HUD time text.tres" id="2_oavgi"]
+[ext_resource type="StyleBox" uid="uid://b3wc3kufbp28j" path="res://assets/styles/test HUD text.tres" id="2_w6i7q"]
+[ext_resource type="StyleBox" uid="uid://c7p2s4i2630cx" path="res://assets/styles/HUD text.tres" id="3_bo5uc"]
+[ext_resource type="PackedScene" uid="uid://3wjpdb1x8tsv" path="res://assets/scene/strategic_deployment.tscn" id="4_bo5uc"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6i7q"]
-bg_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itvfy"]
-bg_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-border_width_left = 50
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oavgi"]
-bg_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-border_width_left = 50
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7vlf7"]
-bg_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-draw_center = false
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.23529412, 0.23529412, 0.23529412, 0.49803922)
-border_blend = true
-corner_detail = 5
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bo5uc"]
 
 [node name="HUD" type="CanvasLayer"]
 
@@ -50,7 +21,7 @@ mouse_filter = 1
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_w6i7q")
+theme_override_styles/normal = ExtResource("2_oavgi")
 text = "40：00"
 
 [node name="mission countdown Timer" type="Timer" parent="mission countdown/show mission countdown"]
@@ -66,7 +37,7 @@ offset_bottom = 74.0
 mouse_filter = 1
 theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_itvfy")
+theme_override_styles/normal = ExtResource("3_bo5uc")
 text = "999"
 
 [node name="credit points ico" type="TextureRect" parent="credit points"]
@@ -85,7 +56,7 @@ offset_bottom = 73.0
 mouse_filter = 1
 theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_oavgi")
+theme_override_styles/normal = ExtResource("3_bo5uc")
 text = "999"
 
 [node name="chrysoberyl ico" type="TextureRect" parent="chrysoberyl"]
@@ -112,6 +83,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 32
+theme_override_styles/focus = SubResource("StyleBoxFlat_bo5uc")
 text = "消灭所有机器人工厂"
 
 [node name="mission content" type="Label" parent="show mission condition"]
@@ -123,14 +95,36 @@ theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 20
 text = "消灭所有机器人工厂(0/6)"
 
-[node name="show FPS" type="Label" parent="."]
+[node name="strategic deployment" parent="." instance=ExtResource("4_bo5uc")]
+
+[node name="test HUD" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
 offset_left = 3.0
 offset_top = 2.0
-offset_right = 93.0
-offset_bottom = 44.0
+offset_right = 43.0
+offset_bottom = 42.0
+
+[node name="mouse location" type="Label" parent="test HUD"]
+layout_mode = 0
+offset_top = 42.0
+offset_right = 382.0
+offset_bottom = 84.0
 mouse_filter = 1
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("1_7vlf7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_7vlf7")
+theme_override_styles/normal = ExtResource("2_w6i7q")
+text = "mouse  location:x: y:"
+
+[node name="FPS" type="Label" parent="test HUD"]
+layout_mode = 0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("2_w6i7q")
 text = "FPS:"

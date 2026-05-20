@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c7whaftv5t88s"]
+[gd_scene load_steps=9 format=3 uid="uid://c7whaftv5t88s"]
 
 [ext_resource type="PackedScene" uid="uid://d27uy1map1qhr" path="res://assets/scene/HUD.tscn" id="1_821e4"]
 [ext_resource type="Script" uid="uid://bywycs2rpu3v" path="res://assets/code/main.gd" id="1_tb8ar"]
@@ -7,6 +7,11 @@
 [ext_resource type="PackedScene" uid="uid://dypwspmufnr0b" path="res://assets/scene/main_map.tscn" id="5_mqc3k"]
 [ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
 [ext_resource type="Script" uid="uid://b0b7kjiiectpv" path="res://assets/code/gaming_camera_2d.gd" id="6_mqc3k"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_mqc3k"]
+vertices = PackedVector2Array(5207, 3095.9922, 9, 3095, 10, 10, 5207, 10)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(0, 0, -1, 3105, 5217, 3106, 5217, 0)])
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_tb8ar")
@@ -22,8 +27,12 @@ script = ExtResource("3_0vk0l")
 
 [node name="map" parent="." instance=ExtResource("5_mqc3k")]
 
-[node name="character" parent="." instance=ExtResource("3_0nmyk")]
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="map"]
+navigation_polygon = SubResource("NavigationPolygon_mqc3k")
+
+[node name="character" parent="." node_paths=PackedStringArray("navigation_region2D") instance=ExtResource("3_0nmyk")]
 position = Vector2(683, 502)
+navigation_region2D = NodePath("../map/NavigationRegion2D")
 
 [node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
 position = Vector2(958, 470)

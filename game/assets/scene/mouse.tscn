@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://631hs68lqp8t"]
+
+[ext_resource type="Script" uid="uid://cxxie8fvlf4rc" path="res://assets/code/mouse.gd" id="1_d3yqi"]
+
+[node name="mouse" type="Node2D"]
+script = ExtResource("1_d3yqi")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="Polygon2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Polygon2D/Area2D"]

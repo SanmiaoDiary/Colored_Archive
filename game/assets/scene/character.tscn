@@ -26,5 +26,9 @@ texture = ExtResource("1_x6quy")
 [node name="mouse collision" type="CollisionShape2D" parent="mouse"]
 shape = SubResource("CapsuleShape2D_rhor0")
 
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+avoidance_enabled = true
+radius = 15.0
+
 [connection signal="mouse_entered" from="mouse" to="." method="_on_mouse_mouse_entered"]
 [connection signal="mouse_exited" from="mouse" to="." method="_on_mouse_mouse_exited"]
