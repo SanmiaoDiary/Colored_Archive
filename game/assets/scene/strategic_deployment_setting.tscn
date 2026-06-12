@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4wemge2jdrcg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l33ta"]
+
+[node name="strategic deployment setting" type="Panel"]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -1920.0
+offset_top = 1.0
+offset_right = -1770.0
+offset_bottom = 211.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_l33ta")

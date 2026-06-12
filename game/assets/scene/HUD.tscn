@@ -1,0 +1,110 @@
+[gd_scene load_steps=6 format=3 uid="uid://d27uy1map1qhr"]
+
+[ext_resource type="FontFile" uid="uid://c7eipmswlp2f2" path="res://assets/fonts/Minecraft AE(支持中文).ttf" id="1_7vlf7"]
+[ext_resource type="Script" uid="uid://bgir8hj1tmyn3" path="res://assets/code/HUD.gd" id="1_d0eje"]
+[ext_resource type="StyleBox" uid="uid://7pmrli85htjn" path="res://assets/styles/HUD time text.tres" id="2_oavgi"]
+[ext_resource type="StyleBox" uid="uid://c7p2s4i2630cx" path="res://assets/styles/HUD text.tres" id="3_bo5uc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bo5uc"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_d0eje")
+
+[node name="mission countdown" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="show mission countdown" type="Label" parent="mission countdown"]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 32.0
+offset_right = 161.0
+offset_bottom = 64.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("2_oavgi")
+text = "40：00"
+
+[node name="mission countdown Timer" type="Timer" parent="mission countdown/show mission countdown"]
+wait_time = 2400.0
+
+[node name="credit points" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="show credit points" type="Label" parent="credit points"]
+layout_mode = 0
+offset_left = 183.0
+offset_top = 32.0
+offset_right = 310.0
+offset_bottom = 74.0
+mouse_filter = 1
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("3_bo5uc")
+text = "999"
+
+[node name="credit points ico" type="TextureRect" parent="credit points"]
+layout_mode = 0
+offset_left = 186.0
+offset_top = 33.0
+offset_right = 226.0
+offset_bottom = 73.0
+
+[node name="pyroxene" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="show pyroxene" type="Label" parent="pyroxene"]
+layout_mode = 0
+offset_left = 326.0
+offset_top = 31.0
+offset_right = 453.0
+offset_bottom = 73.0
+mouse_filter = 1
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("3_bo5uc")
+text = "999"
+
+[node name="pyroxene ico" type="TextureRect" parent="pyroxene"]
+layout_mode = 0
+offset_left = 355.0
+offset_top = 55.0
+offset_right = 395.0
+offset_bottom = 95.0
+
+[node name="show mission condition" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="mission condtion ico" type="TextureRect" parent="show mission condition"]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 82.0
+offset_right = 83.0
+offset_bottom = 122.0
+
+[node name="mission name" type="Label" parent="show mission condition"]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 84.0
+offset_right = 397.0
+offset_bottom = 122.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 1
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/focus = SubResource("StyleBoxFlat_bo5uc")
+text = "消灭所有机器人工厂"
+
+[node name="mission content" type="Label" parent="show mission condition"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 129.0
+offset_right = 408.0
+offset_bottom = 224.0
+theme_override_fonts/font = ExtResource("1_7vlf7")
+theme_override_font_sizes/font_size = 20
+text = "消灭所有机器人工厂(0/6)"

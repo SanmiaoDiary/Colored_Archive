@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://2ijmj0igyrpu"]
+
+[ext_resource type="Script" uid="uid://dw6pf1r36xbjd" path="res://assets/code/character.gd" id="1_rhor0"]
+[ext_resource type="Texture2D" uid="uid://dfhklctvdbqk1" path="res://assets/images/cat.png" id="1_w4huj"]
+[ext_resource type="Texture2D" uid="uid://bbm1xdlri8wri" path="res://assets/images/character_selection_marker.png" id="1_x6quy"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rhor0"]
+radius = 11.0
+height = 32.0
+
+[node name="character" type="CharacterBody2D"]
+script = ExtResource("1_rhor0")
+
+[node name="character" type="Sprite2D" parent="."]
+texture = ExtResource("1_w4huj")
+
+[node name="character collision" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_rhor0")
+
+[node name="character selection box" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("1_x6quy")
+
+[node name="mouse" type="Area2D" parent="."]
+
+[node name="mouse collision" type="CollisionShape2D" parent="mouse"]
+shape = SubResource("CapsuleShape2D_rhor0")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+avoidance_enabled = true
+radius = 15.0
+
+[connection signal="mouse_entered" from="mouse" to="." method="_on_mouse_mouse_entered"]
+[connection signal="mouse_exited" from="mouse" to="." method="_on_mouse_mouse_exited"]

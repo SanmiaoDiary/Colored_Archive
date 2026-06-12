@@ -1,0 +1,32 @@
+[gd_scene load_steps=9 format=3 uid="uid://c7whaftv5t88s"]
+
+[ext_resource type="PackedScene" uid="uid://d27uy1map1qhr" path="res://assets/scene/HUD.tscn" id="1_821e4"]
+[ext_resource type="Script" uid="uid://bywycs2rpu3v" path="res://assets/code/main.gd" id="1_tb8ar"]
+[ext_resource type="PackedScene" uid="uid://2ijmj0igyrpu" path="res://assets/scene/character.tscn" id="3_0nmyk"]
+[ext_resource type="Script" uid="uid://bgir8hj1tmyn3" path="res://assets/code/HUD.gd" id="3_0vk0l"]
+[ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
+[ext_resource type="PackedScene" uid="uid://cemux1eldrcxn" path="res://assets/scene/map.tscn" id="6_fw18y"]
+[ext_resource type="Script" uid="uid://b0b7kjiiectpv" path="res://assets/code/gaming_camera_2d.gd" id="6_mqc3k"]
+[ext_resource type="Script" uid="uid://dawhh86v4v6dc" path="res://assets/code/map.gd" id="8_2xo41"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_tb8ar")
+
+[node name="HUD" parent="." instance=ExtResource("1_821e4")]
+script = ExtResource("3_0vk0l")
+
+[node name="character" parent="." instance=ExtResource("3_0nmyk")]
+position = Vector2(500, 250)
+
+[node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
+position = Vector2(531, 319)
+
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("map_node")]
+position = Vector2(1, 0)
+script = ExtResource("6_mqc3k")
+map_node = NodePath("../map")
+
+[node name="map" parent="." instance=ExtResource("6_fw18y")]
+script = ExtResource("8_2xo41")
+
+[connection signal="start_a_game" from="." to="HUD" method="_on_main_start_a_game"]
