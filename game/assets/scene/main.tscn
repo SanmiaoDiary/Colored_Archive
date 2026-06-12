@@ -1,17 +1,23 @@
-[gd_scene load_steps=9 format=3 uid="uid://c7whaftv5t88s"]
+[gd_scene load_steps=14 format=3 uid="uid://c7whaftv5t88s"]
 
 [ext_resource type="PackedScene" uid="uid://d27uy1map1qhr" path="res://assets/scene/HUD.tscn" id="1_821e4"]
 [ext_resource type="Script" uid="uid://bywycs2rpu3v" path="res://assets/code/main.gd" id="1_tb8ar"]
 [ext_resource type="PackedScene" uid="uid://2ijmj0igyrpu" path="res://assets/scene/character.tscn" id="3_0nmyk"]
-[ext_resource type="Script" uid="uid://bgir8hj1tmyn3" path="res://assets/code/HUD.gd" id="3_0vk0l"]
 [ext_resource type="PackedScene" uid="uid://dypwspmufnr0b" path="res://assets/scene/main_map.tscn" id="5_mqc3k"]
 [ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
 [ext_resource type="Script" uid="uid://b0b7kjiiectpv" path="res://assets/code/gaming_camera_2d.gd" id="6_mqc3k"]
+[ext_resource type="PackedScene" uid="uid://631hs68lqp8t" path="res://assets/scene/mouse.tscn" id="7_mqc3k"]
+[ext_resource type="Script" uid="uid://da4s4dlhmbgl" path="res://assets/code/data_manager.gd" id="8_2xo41"]
+[ext_resource type="PackedScene" uid="uid://dgvuf0f7obx11" path="res://assets/scene/test_hud.tscn" id="10_bhk2f"]
+[ext_resource type="PackedScene" uid="uid://b4wemge2jdrcg" path="res://assets/scene/strategic_deployment_setting.tscn" id="10_l33ta"]
+[ext_resource type="PackedScene" uid="uid://3wjpdb1x8tsv" path="res://assets/scene/strategic_deployment.tscn" id="11_ld5aq"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_mqc3k"]
 vertices = PackedVector2Array(5207, 3095.9922, 9, 3095, 10, 10, 5207, 10)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(0, 0, -1, 3105, 5217, 3106, 5217, 0)])
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ypxfr"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_tb8ar")
@@ -21,9 +27,6 @@ position = Vector2(1186, 701)
 script = ExtResource("6_mqc3k")
 camera_zoom_min = Vector2(0.5, 0.5)
 map = NodePath("../map")
-
-[node name="HUD" parent="." instance=ExtResource("1_821e4")]
-script = ExtResource("3_0vk0l")
 
 [node name="map" parent="." instance=ExtResource("5_mqc3k")]
 
@@ -37,4 +40,31 @@ navigation_region2D = NodePath("../map/NavigationRegion2D")
 [node name="enemy" parent="." instance=ExtResource("5_uu0fw")]
 position = Vector2(958, 470)
 
-[connection signal="start_a_game" from="." to="HUD" method="_on_main_start_a_game"]
+[node name="mouse" parent="." instance=ExtResource("7_mqc3k")]
+
+[node name="data manager" type="Node" parent="."]
+script = ExtResource("8_2xo41")
+
+[node name="overlapping display" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="overlapping display" instance=ExtResource("1_821e4")]
+
+[node name="strategic deployment" parent="overlapping display" instance=ExtResource("11_ld5aq")]
+offset_bottom = 1200.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ypxfr")
+
+[node name="strategic deployment setting" parent="overlapping display/strategic deployment" instance=ExtResource("10_l33ta")]
+layout_mode = 1
+offset_left = 0.0
+offset_right = 150.0
+
+[node name="test HUD" parent="overlapping display" instance=ExtResource("10_bhk2f")]
+visible = false
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 500.0
+offset_bottom = 100.0
+
+[connection signal="start_a_game" from="." to="overlapping display/HUD" method="_on_main_start_a_game"]
+[connection signal="strategic_deployment_is_close" from="overlapping display/strategic deployment" to="overlapping display/HUD" method="_on_strategic_deployment_strategic_deployment_is_close"]
+[connection signal="strategic_deployment_is_open" from="overlapping display/strategic deployment" to="overlapping display/HUD" method="_on_strategic_deployment_strategic_deployment_is_open"]

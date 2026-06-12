@@ -22,3 +22,7 @@ func create_character():#创建一个角色
 	
 func _process(delta: float) -> void:
 	pass
+
+
+func _on_strategic_deployment_strategic_deployment_is_open() -> void:
+	pass # Replace with function body.

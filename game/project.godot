@@ -11,10 +11,15 @@ config_version=5
 [application]
 
 config/name="ColoredArchive"
-config/version="0.1.5"
+config/version="0.1.6"
 run/main_scene="uid://c7whaftv5t88s"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="uid://cusmxhnfhco2b"
+
+[autoload]
+
+Mouse="*res://assets/code/mouse.gd"
+DataManager="*res://assets/code/data_manager.gd"
 
 [display]
 
@@ -26,6 +31,7 @@ mouse_cursor/custom_image="uid://2uvchq08gvrc"
 [editor]
 
 movie_writer/fps=120
+version_control/autoload_on_startup=true
 
 [input]
 
@@ -91,6 +97,7 @@ F3_down={
 
 [internationalization]
 
+locale/translations=PackedStringArray("res://assets/languages/zh_cn.json", "res://assets/languages/en.json")
 locale/locale_filter_mode=0
 
 [rendering]
