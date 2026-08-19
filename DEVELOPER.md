@@ -1,664 +1,528 @@
-# ColoredArchive（彩色档案）开发者文档
-
-> 本文档面向希望参与 ColoredArchive（缩写 **CA**）项目开发的开发者，内容基于当前 `game/` 目录下的实际代码、场景、配置与策划文档编写，请以代码仓库最新内容为准。
-
-- **项目名称**：ColoredArchive / 彩色档案
-- **当前版本**：v0.1.6
-- **游戏类型**：2D 像素风 RTT（实时战术，Real-Time Tactics）
-- **开发引擎**：Godot 4.7.1（GDScript）
-- **版权声明**：本项目免费、完全开源，游戏内角色与世界观设定版权属于韩国 NEXON 公司与上海星啸网络科技有限公司，本项目仅保留著作权。**不得用于盈利。**
-
----
+# ColoredArchive 开发者文档（面向二创作者 / MOD 开发者）
 
 ## 目录
 
-1. [项目概览](#1-项目概览)
-2. [技术栈与运行环境](#2-技术栈与运行环境)
-3. [目录结构](#3-目录结构)
-4. [系统架构](#4-系统架构)
-5. [核心脚本详解](#5-核心脚本详解)
-6. [场景文件详解](#6-场景文件详解)
-7. [数据格式规范](#7-数据格式规范)
-8. [输入映射](#8-输入映射)
-9. [策划数值附录](#9-策划数值附录)
-10. [扩展指南](#10-扩展指南)
-11. [贡献与版本规范](#11-贡献与版本规范)
-12. [已知问题与路线图](#12-已知问题与路线图)
+- [1. 本文档是什么](#1-本文档是什么)
+- [2. 版权与二创许可](#2-版权与二创许可)
+- [3. 快速上手](#3-快速上手)
+- [4. 游戏机制与数值说明](#4-游戏机制与数值说明)
+- [5. 内容扩展指南](#5-内容扩展指南)
+- [6. 素材制作规范](#6-素材制作规范)
+- [7. MOD 开发指南](#7-mod-开发指南)
+- [8. 常见问题](#8-常见问题)
+- [附录 A：输入映射表](#附录-a输入映射表)
+- [附录 B：常用路径速查](#附录-b常用路径速查)
 
 ---
 
-## 1. 项目概览
+## 1. 本文档是什么
 
-### 1.1 项目定位
+**ColoredArchive（彩色档案，简称 CA）** 是一款使用 Godot（GDScript）开发的 2D 像素风 RTT（实时战术）同人游戏，致敬《蔚蓝档案（Blue Archive）》。
 
-ColoredArchive 是一款使用 Godot 与 GDScript 开发的 **2D 像素风 RTT 游戏**，目标方向是《蔚蓝档案》（Blue Archive）同人游戏。v0.1.3 之前使用 Python + pygame 开发（该版本已废弃，存放于 `python_old/` 目录，不再维护）。
+本项目的核心开发者只有一人，因此本文档**不是**给核心开发看的内部实现说明，而是写给所有**二创作者和 MOD 开发者**的创作指南。本文档回答三个问题：
 
-### 1.2 当前功能状态
+1. 我可以在什么范围内自由创作？（版权与二创许可）
+2. 这个游戏有哪些机制与数值，我该遵循什么？（游戏设计）
+3. 我如何向游戏里加入新角色、新战略配备、新地图甚至整个 MOD？（扩展指南）
 
-截至 v0.1.6，项目已实现：
+> 阅读前提：你不需要会写代码也能看懂大部分内容（第 5、7 章有少量 GDScript/JSON 示例，按图索骥复制修改即可）。
 
-- 2D 像素地图（`grass` 草地地图）与瓦片地图边界限制
-- 相机自由移动（WASD）与缩放（滚轮）、垂直同步模式与最大帧率可在编辑器中实时配置
-- 角色系统：选中 / 取消选中、基于 `NavigationAgent2D` + `NavigationRegion2D` 的寻路移动、状态机雏形
-- 敌人节点（占位，逻辑未实现）
-- HUD：任务倒计时显示、调试 HUD（FPS，F3 开关）
-- 战略配备（Strategic Deployment）面板：Tab 开关、左侧滑出动画、任务预算显示、配备按钮单选
-- 自定义鼠标图标（普通 / 可点击两态，支持 4K 分辨率自动切换 32x32 / 64x64）
-- 数据层：`DataManager`（autoload）管理角色与战略配备字典
-
-### 1.3 项目来源
-
-- GitHub：[SanmiaoDiary/Colored_Archive](https://github.com/SanmiaoDiary/Colored_Archive)
-- Gitee：[sanmiaodiary/colored_archive](https://gitee.com/sanmiaodiary/colored_archive)
-
----
-
-## 2. 技术栈与运行环境
+### 1.1 项目技术栈
 
 | 项目 | 说明 |
 |------|------|
-| 引擎 | Godot **4.5 及以上**（项目当前以 4.7.1 开发，`.vscode/settings.json` 中配置的编辑器路径为 `Godot_v4.7.1-stable_win64.exe`） |
-| 语言 | GDScript |
-| 渲染方式 | `rendering/renderer/rendering_method="mobile"` |
-| 窗口尺寸 | 1920 x 1200 |
-| 插件 | `addons/godot_ai/`（Godot AI/MCP 辅助插件，**与游戏逻辑无关**，可忽略） |
+| 游戏引擎 | Godot 4.5 或更高版本（当前开发使用 4.7.x，标准版即可，**不要**用 C# 版） |
+| 脚本语言 | GDScript |
+| 渲染 | 2D，`Mobile` 渲染模式 |
+| 分辨率 | 1920 × 1200 |
+| 主目录 | `game/`（Godot 项目根目录） |
+| 当前版本 | v0.1.x（开发分支 develop） |
 
-> 注意：必须使用**标准版** Godot。下载 C# 版本可能导致项目无法运行。
-
-### 2.1 开发工具建议
-
-- **编辑器**：Godot 官方编辑器（导入 `game/project.godot`）
-- **VSCode**：可通过 Godot Tools 扩展配合 `.vscode/settings.json` 使用，其中 `godotTools.editorPath.godot4` 指向本机 Godot 4.7.1 可执行文件路径（按需修改）
-- **运行**：在 Godot 中打开项目后按 `F5`
-
----
-
-## 3. 目录结构
-
-### 3.1 仓库根目录
+### 1.2 一句话认识项目结构
 
 ```
 ColoredArchive/
-├── README.md              # 项目介绍、部署教程、第三方资产与声明
-├── updateplan.md          # 策划数值参考表（护甲、穿甲、伤害、地图debuff、任务）
-├── DEVELOPER.md           # 本文档
-├── example_code.md        # 示例代码说明
-├── game/                  # ★ Godot 项目主目录（唯一活跃开发目录）
-├── python_old/            # 废弃的 Python + pygame 版本（v0.1.3 前，不再维护）
-├── project_file/          # 源工程文件（PSD 图片源文件，如 KivotosMap.psd）
-├── back_up/               # 备份目录
-└── LICENSE.md             # 开源许可证
+├── game/                  # Godot 项目（一切创作都在这里发生）
+│   ├── project.godot      # 项目配置（自动加载、输入映射、窗口等）
+│   ├── assets/
+│   │   ├── code/          # 所有 GDScript 脚本
+│   │   ├── scene/         # 所有场景（.tscn）
+│   │   ├── images/        # 图片素材
+│   │   ├── fonts/         # 字体
+│   │   ├── musics/        # 音乐
+│   │   ├── languages/     # 语言文件（zh_cn.json / en.json）
+│   │   └── styles/        # 主题样式（.tres）
+│   └── mods/              # MOD 目录（见第 7 章）
+├── python_old/            # 废弃的 pygame 旧版（不要使用）
+└── DEVELOPER.md           # 本文档
 ```
-
-### 3.2 game/（Godot 项目主目录）
-
-```
-game/
-├── project.godot                 # Godot 项目配置（名称/版本/主场景/autoload/输入映射/窗口/渲染）
-├── export_presets.cfg            # 导出预设（Web / Windows Desktop）
-├── update_log.md                 # 更新日志（版本历史）
-├── assets/
-│   ├── code/                     # ★ 全部 GDScript 脚本
-│   ├── scene/                    # ★ 全部场景（.tscn）
-│   ├── images/                   # 图片资源（角色贴图、鼠标图标、地图、Logo 等）
-│   ├── fonts/                    # 字体（Minecraft AE 字体，支持中文）
-│   ├── musics/                   # 音乐（Constant Moderato.mp3）
-│   ├── languages/                # 多语言 JSON（en.json、zh_cn.json，当前为空模板）
-│   └── styles/                   # 主题/样式资源（.tres，用于 Label 背景等）
-├── mods/
-│   └── example_mod/              # 示例 MOD（example_mod.py，Python 占位，无实质作用）
-├── plan/                         # 策划文档（plan.txt 与 CA企划.docx）
-├── saves/                        # 存档目录（new_save.json、save_test.db 测试用）
-├── addons/
-│   └── godot_ai/                 # Godot AI/MCP 插件（第三方，与游戏逻辑无关）
-└── .vscode/
-    └── settings.json             # VSCode 编辑器路径配置
-```
-
-### 3.3 assets/code/（脚本清单，共 14 个）
-
-| 脚本 | 作用 |
-|------|------|
-| `main.gd` | 主场景根节点逻辑：开始游戏信号、随机选图 |
-| `data_manager.gd` | 全局数据管理（autoload）：角色 / 战略配备字典 |
-| `character_manager.gd` | 角色管理器：创建 / 删除角色实例 |
-| `character.gd` | 角色（CharacterBody2D）：选中、状态机、寻路移动 |
-| `enemy.gd` | 敌人节点脚本（空实现，待开发） |
-| `gaming_camera_2d.gd` | 相机：移动、缩放、垂直同步、帧率、地图限位 |
-| `mouse.gd` | 全局鼠标图标管理（autoload） |
-| `HUD.gd` | HUD：任务倒计时、根据战略配备面板状态显隐 |
-| `map.gd` | 瓦片地图（TileMapLayer）：计算地图边界 |
-| `strategic_deployment.gd` | 战略配备面板：Tab 开关、滑出动画、任务预算 |
-| `strategic_deployment_button.gd` | 战略配备按钮：创建按钮、选中动画、单选逻辑 |
-| `strategic_deployment_setting.gd` | 战略配备设置面板（空实现） |
-| `test_hud.gd` | 调试 HUD：FPS 显示、F3 开关 |
-| `character_state_machine_test.gd` | 角色状态机测试（空实现） |
 
 ---
 
-## 4. 系统架构
+## 2. 版权与二创许可
 
-### 4.1 全局单例（Autoload）
+### 2.1 一句话声明
 
-在 `project.godot` 的 `[autoload]` 中注册了 2 个全局单例：
+> 本项目**免费、完全开源、不可盈利**。游戏内角色与世界观设定版权归韩国 **NEXON** 公司和 **上海星啸网络科技有限公司** 所有，本项目仅保留著作权。
 
-| 单例名 | 脚本 | 说明 |
-|--------|------|------|
-| `Mouse` | `res://assets/code/mouse.gd` | 全局鼠标图标管理，任何节点可直接调用 `Mouse.mouse_can_click()` / `Mouse.mouse_can_not_click()` |
-| `DataManager` | `res://assets/code/data_manager.gd` | 全局数据字典，任何节点可直接读取 `DataManager.all_characters` / `DataManager.all_strategic_deployment` |
+### 2.2 你可以做什么
 
-```ini
-[autoload]
+- ✅ 免费下载、修改、再分发本项目源码
+- ✅ 基于本项目制作你自己的项目（换皮、加内容、做 MOD 均可）
+- ✅ 自由创作非商业性的同人内容（视频、直播、图片等）
+- ✅ 使用本项目素材制作二创，只要不用于盈利
 
-Mouse="*res://assets/code/mouse.gd"
-DataManager="*res://assets/code/data_manager.gd"
-```
+### 2.3 你不可以做什么
 
-### 4.2 主场景节点树（main.tscn）
+- ❌ 将本项目或基于本项目的内容**用于盈利**（含收费下载、广告分成、上架 Steam 等）
+- ❌ 将《蔚蓝档案》角色与世界观设定据为己有、用于商业用途
+- ❌ 冒充官方或原版发行方
 
-```mermaid
-graph TD
-    MAIN["main (Node2D)<br/>main.gd"]
-    MAIN --> CAM["Camera2D<br/>gaming_camera_2d.gd<br/>map = ../map"]
-    MAIN --> MAP["map (main_map.tscn 实例)<br/>map.gd (TileMapLayer)"]
-    MAP --> NAV["NavigationRegion2D<br/>NavigationPolygon (矩形 5207x3095)"]
-    MAIN --> CM["character manager<br/>character_manager.gd<br/>navigation_region2D = ../map/NavigationRegion2D"]
-    MAIN --> ENEMY["enemy (enemy.tscn 实例)"]
-    MAIN --> MOUSE["mouse (mouse.tscn 实例)"]
-    MAIN --> DM["data manager (Node)<br/>data_manager.gd"]
-    MAIN --> OVERLAP["overlapping display (CanvasLayer)"]
-    OVERLAP --> HUD["HUD (HUD.tscn)"]
-    OVERLAP --> SD["strategic deployment<br/>(strategic_deployment.tscn, visible=false)"]
-    OVERLAP --> SDS["strategic deployment setting<br/>(strategic_deployment_setting.tscn, visible=false)"]
-    OVERLAP --> TH["test HUD (test_hud.tscn, visible=false)"]
-```
+### 2.4 第三方资产来源
 
-### 4.3 信号与数据流
+本项目使用了以下第三方资产（如侵权请联系删除）：
 
-```mermaid
-sequenceDiagram
-    participant Main as main (main.gd)
-    participant HUD as HUD (HUD.gd)
-    participant SD as strategic deployment (strategic_deployment.gd)
-    participant CM as character manager
-    participant DM as DataManager (autoload)
-    participant Char as character 实例
+| 资产名称 | 类型 | 作者 | 来源 |
+|---------|------|------|------|
+| Minecraft AE(支持中文).ttf | 字体 | 未知 | 网络 |
+| [蔚蓝档案交响乐]Constant Moderato.mp3 | 音乐 | TIHA Studio | 网络 |
 
-    Main->>Main: start_game()（随机选图）
-    Main->>HUD: signal start_a_game(2700, map)
-    HUD->>HUD: 启动任务倒计时计时器
-
-    Note over SD,HUD: Tab 键
-    SD->>SD: 打开/关闭面板（滑出/缩回动画）
-    SD->>HUD: signal strategic_deployment_is_open / is_close
-    HUD->>HUD: set_HUD_visibility() 隐藏/显示自身
-
-    CM->>CM: _ready() → create_character("ColoredArchive.cat", pos, scale)
-    CM->>DM: 读取 all_characters[id] 的 speed/hp/texture
-    CM->>Char: new_character.setup(...) 后 add_child 到 main
-    Note over Char: 玩家左键点击角色 → 选中；<br/>点击地图空地 → NavigationAgent2D 寻路移动
-```
-
-### 4.4 角色移动实现原理
-
-`character.gd` 使用 Godot 4 的导航系统：
-
-1. `move_ready()` 中通过 `navigation_region2D.get_rid()` 获取导航地图 RID，配置 `NavigationAgent2D`（`max_speed`、`avoidance`、`radius`）。
-2. `_unhandled_input` 中鼠标左键点击空地时，将点击坐标设为 `navigation_agent2D.target_position` 并置 `state["move"] = true`。
-3. `move()` 中每帧调用 `get_next_path_position()` 获得下一路径点，`move_and_slide()` 驱动角色沿路径移动；到达目标点后复位状态。
+**素材引用提醒**：如果你在自己发布的 MOD 或项目里继续使用这些第三方资产，请保留署名；最好附上来源链接。
 
 ---
 
-## 5. 核心脚本详解
+## 3. 快速上手
 
-### 5.1 `main.gd`（主场景根节点）
+### 3.1 运行项目
 
-- **信号**：`start_a_game` —— 一局新游戏开始（携带 `mission_countdown` 任务倒计时秒数与 `map` 地图名）。
-- **变量**：`all_map = ["grass"]` 允许的地图列表；`character_num` 角色数量计数。
-- **关键函数**：
-  - `start_game()`：初始化任务倒计时 `2700` 秒，从 `all_map` 随机选一张地图，`emit(mission_countdown, map)` 发出信号。
-  - `create_character()`：示例方法，实例化 `character.tscn` 并加入场景。
-- **连接**：`start_a_game` 信号与 HUD 的 `_on_main_start_a_game()` 连接（见 main.tscn 的 connection 区段）。
+1. 从 [Godot 官网](https://godotengine.org/zh-cn/) 下载 **4.5 或更高版本** 的**标准版**（非 .NET/C# 版）。
+2. 下载项目源码（GitHub: `SanmiaoDiary/Colored_Archive`，Gitee: `sanmiaodiary/colored_archive`，国内推荐 Gitee）。
+3. 打开 Godot → 导入 → 选择 `game/project.godot`。
+4. 打开项目后按 `F5`（或右上角 ▶）运行。
 
-### 5.2 `data_manager.gd`（autoload，全局数据）
+### 3.2 第一课：改哪里能看到效果
 
-全局数据字典（详见 [第 7 章 数据格式规范](#7-数据格式规范)）：
+如果你是第一次接触这个项目，按下面的顺序试，每一步都能立刻看到变化：
 
-- `all_characters`：所有角色数据，键格式 `"拥有者.角色名"`。
-- `all_strategic_deployment`：所有战略配备数据，键格式 `"拥有者.战略配备名"`。
+1. **改角色数据**：打开 `game/assets/code/data_manager.gd`，把 `all_characters` 里 `ColoredArchive.cat` 的 `"speed":150` 改成 `300`，运行后你的猫会跑得飞快。
+2. **改角色长什么样**：把 `"texture":"res://assets/images/cat.png"` 指向你自己的图片路径，把图片放进 `game/assets/images/` 即可。
+3. **加一个新的战略配备**：在 `data_manager.gd` 的 `all_strategic_deployment` 里复制一段，换一个键名（如 `"ColoredArchive.my_airdrop"`）和 `name`/`cd`，运行后按 `Tab` 打开战略配备面板就能看到新按钮。
+4. **改任务预算**：打开 `game/assets/code/strategic_deployment.gd`，把 `cost = 30000` 改小，感受一下资源紧张。
 
-当前内置数据：
+> 记住：**所有角色和战略配备的数据都集中在 `data_manager.gd` 这一个文件里**，它是本项目的"数据字典"，也是你扩展内容的第一站。
 
-| 字典 | 键 | 内容 |
-|------|-----|------|
-| `all_characters` | `"ColoredArchive.cat"` | 猫（测试角色） |
-| `all_characters` | `"ColoredArchive.Sunaookami Shiroko"` | 砂狼白子（沙狼白子） |
-| `all_strategic_deployment` | `"ColoredArchive.reinforcements"` | 增援 |
-| `all_strategic_deployment` | `"ColoredArchive.resupply"` | 补给 |
-| `all_strategic_deployment` | `"ColoredArchive.mg-43"` | MG-43 |
-| `all_strategic_deployment` | `"ColoredArchive.fast_resupply"` | 快速补给 |
-| `all_strategic_deployment` | `"ColoredArchive.mk-2"` | MK-2 |
-| `all_strategic_deployment` | `"ColoredArchive.L118"` | L118 |
+### 3.3 自动加载（Autoload）
 
-### 5.3 `character_manager.gd`（角色管理器）
+`project.godot` 中注册了两个全局单例，任何脚本都能直接调用：
 
-管理当前对局中的角色实例。
-
-- **变量**：`have_characters`（当前对局角色实例字典）；`father_node = get_parent()`（将角色实例加入父节点 `main`）；`CHARACTER_SCENE`（预加载 `character.tscn`）；`all_characters = DataManager.all_characters`；`@export navigation_region2D`（导航区域节点，检查器中指定为 `../map/NavigationRegion2D`）。
-- **`create_character(id, position, scale)`**：从 `DataManager.all_characters` 读取 `speed` / `hp` / `texture`，实例化角色场景，调用 `setup(id, position, scale, hp, speed, texture, navigation_region2D)`，`call_deferred` 添加到父节点，并存入 `have_characters[id]`。
-- **`delete_character(id)`**：校验实例有效后 `queue_free()` 并移除字典键。
-- **`_ready()`**：清空旧角色后创建测试角色 `"ColoredArchive.cat"`（位于 `(683, 502)`）。后续应改为通过信号接收角色 id 创建。
-
-### 5.4 `character.gd`（角色）
-
-继承 `CharacterBody2D`，单角色逻辑核心。
-
-- **`setup(id, position, scale, hp, speed, texture, navigation_region2D)`**：初始化角色数据、设置贴图纹理、位置缩放，并调用 `move_ready()` 配置导航。
-- **状态机（`state` 字典）**：`selection`（选中）、`action`（动作）、`move`（移动）三个状态位；`state_machine()` 根据 `state["move"]` 分派 `move()` 或 `standby()`。
-- **输入处理（`_unhandled_input`）**：
-  - 鼠标左键点击角色本体 → 切换选中状态（`be_selection()` / `cancel_selection()`，控制选中框显示）。
-  - 鼠标左键点击非角色区域 → 将点击位置设为 `navigation_agent2D.target_position`，置 `state["move"] = true`。
-- **移动**：`move()` 内使用 `get_next_path_position()` + `move_and_slide()`；到达目标点后若 `debug_enabled` 则输出调试信息。
-- **相关场景 `character.tscn` 节点树**：
-
-```
-character (CharacterBody2D)
-├── character texture (Sprite2D)      # 角色贴图
-├── character collision (CapsuleShape2D) # 碰撞体
-├── character selection box (Sprite2D)   # 选中框（默认隐藏）
-├── mouse (Area2D)                    # 鼠标点击检测区域
-└── NavigationAgent2D                 # 导航代理
-```
-
-### 5.5 `enemy.gd`（敌人，占位）
-
-继承 `CharacterBody2D`，当前为空实现，供后续敌人 AI 开发使用。
-
-### 5.6 `gaming_camera_2d.gd`（相机）
-
-继承 `Camera2D`，挂载于主场景 `Camera2D` 节点。
-
-- **可导出参数（检查器中可实时修改）**：
-  - `camera_speed = 500`（移动速度）、`camera_zoom_speed = 5`（缩放速度）
-  - `camera_zoom_max = (4, 4)`、`camera_zoom_min = (0.2, 0.2)`
-  - `camera_default_location = (500, 800)`（默认位置）
-  - `map: Node2D`（检查器中指向 `../map`）
-  - `max_fps = 120`（最大帧率，修改立即生效）
-  - `vsync_mode`（枚举：`DISABLED` / `ENABLED` / `ADAPTIVE` / `MAILBOX`，setter 中立即应用）
-- **`move_camera(delta)`**：读取 `w_down` / `a_down` / `s_down` / `d_down` 输入，归一化方向后按速度移动。
-- **`camera_zoom(delta)`**：读取 `zoom_in` / `zoom_out` 输入（滚轮），缩放并 clamp 到最小/最大范围。
-- **`_ready()`**：应用垂直同步与帧率、启用相机、获取地图边界并启用 `limit` 限制（`limit_top/bottom/left/right`），初始化相机位置。
-
-### 5.7 `mouse.gd`（autoload，全局鼠标）
-
-- **贴图**：预加载 4 张鼠标图标（常规 / 可点击 × 32x32 / 64x64）。
-- **`set_mouse_icon()`**：根据窗口高度选择图标——窗口高度 `>= 2000`（约 4K）用 64x64，否则 32x32；根据 `selectable` 切换常规/可点击图标。
-- **`_process()`**：监听窗口高度变化，变化时重新设置图标。
-- **对外接口**：`mouse_can_click()`（设为可点击）、`mouse_can_not_click()`（设为不可点击）。
-
-### 5.8 `HUD.gd`（HUD）
-
-继承 `Control`，挂载于 `overlapping display` CanvasLayer 下。
-
-- **节点引用**：`mission_countdown_Timer_lable`（倒计时 `Timer`）、`mission_countdown_lable`（倒计时文本 Label）。
-- **`_on_main_start_a_game(mission_countdown)`**：接收主场景信号，设置计时器 `wait_time` 并 `start()`。
-- **`_process()`**：将剩余时间格式化为 `MM:SS` 显示。
-- **`set_HUD_visibility()`**：当战略配备面板打开（`strategic_deployment_panel_is_open == true`）时隐藏自身，否则显示。
-- **信号连接**：接收 `strategic_deployment` 的 `strategic_deployment_is_open` / `is_close` 信号（`_on_strategic_deployment_strategic_deployment_is_open/close()`）。
-
-### 5.9 `map.gd`（瓦片地图）
-
-继承 `TileMapLayer`，用于计算地图边界。
-
-- **`get_boundaries() -> Dictionary`**：读取 `tile_set.tile_size` 与 `get_used_rect()`，计算：
-  - `top_limit = 0`、`left_limit = 0`
-  - `bottom_limit = 地图高度瓦片数 × tile_height`
-  - `right_limit = 地图宽度瓦片数 × tile_width`
-- 返回字典 `{ "top_limit", "bottom_limit", "left_limit", "right_limit" }`，供相机限位使用。
-
-### 5.10 `strategic_deployment.gd`（战略配备面板）
-
-继承 `Control`，位于 `overlapping display` CanvasLayer 下。
-
-- **信号**：`strategic_deployment_is_open` / `strategic_deployment_is_close`（通知 HUD 显隐）。
-- **变量**：`cost = 30000`（任务预算）；`cost_lable` 显示 `"任务预算:xxx"`；`init_position = (-120, 0)`（初始位置，面板从左侧滑入）。
-- **`_unhandled_input`**：`Tab_down` 键切换面板开关。
-- **动画**：使用 `Tween`（`TRANS_QUAD`）实现左滑出/缩回；缩回后自动隐藏节点。
-- **窗口尺寸变化响应**：面板位置随窗口尺寸自适应。
-
-### 5.11 `strategic_deployment_button.gd`（战略配备按钮）
-
-继承 `TextureButton`，动态生成配备按钮。
-
-- **内部类 `strategic_deployment_buttons`**：`_init(manager, id, name, cd, button_position, button_icon)` 存储单个按钮数据。
-- **控制端**：
-  - `create_button()`：遍历 `DataManager.all_strategic_deployment` 生成按钮，记录到 `all_strategic_deployment_dict`。
-  - `be_selected()` / `cancel_select()`：选中/取消选中时的浮动动画。
-  - `control_button_only_one_can_select(id)`：保证同一时间只有一个按钮处于选中状态。
-- **信号连接**：`pressed` / `mouse_entered` / `mouse_exited`（鼠标悬停时切换可点击鼠标图标）。
-
-### 5.12 `strategic_deployment_setting.gd`（战略配备设置面板）
-
-继承 `Panel`，当前为空实现，预留设置面板功能。
-
-### 5.13 `test_hud.gd`（调试 HUD）
-
-继承 `Control`。
-
-- **`_process()`**：实时显示 `FPS:{当前帧率}`。
-- **F3 切换**：`F3_down` 输入切换调试 HUD 显隐（`show_test_HUD()` / `hide_test_HUD()`）。
-- 默认隐藏。
-
-### 5.14 `character_state_machine_test.gd`（状态机测试）
-
-继承 `CharacterBody2D`，当前为空实现，用于测试角色状态机设计。
-
----
-
-## 6. 场景文件详解
-
-`game/assets/scene/` 下共有 12 个场景文件：
-
-| 场景 | 用途 | 关键脚本 |
-|------|------|----------|
-| `main.tscn` | 主场景（入口） | `main.gd`、`gaming_camera_2d.gd`、`character_manager.gd`、`data_manager.gd` |
-| `character.tscn` | 角色预制体 | `character.gd` |
-| `enemy.tscn` | 敌人预制体 | `enemy.gd` |
-| `mouse.tscn` | 鼠标图标节点 | `mouse.gd` |
-| `HUD.tscn` | HUD 界面 | `HUD.gd` |
-| `strategic_deployment.tscn` | 战略配备面板 | `strategic_deployment.gd`、`strategic_deployment_button.gd` |
-| `strategic_deployment_setting.tscn` | 战略配备设置 | `strategic_deployment_setting.gd` |
-| `test_hud.tscn` | 调试 HUD | `test_hud.gd` |
-| `main_map.tscn` | 草地地图 | `map.gd` |
-
-> 其余场景为资源/测试场景。所有 `.tscn` 均有对应的 `.uid` 文件（Godot 4.4+ 资源 UID 系统）。
-
-### 6.1 main.tscn 关键连接
-
-- `main.start_a_game` → `HUD._on_main_start_a_game`
-- `strategic deployment.strategic_deployment_is_open` → `HUD._on_strategic_deployment_strategic_deployment_is_open`
-- `strategic deployment.strategic_deployment_is_close` → `HUD._on_strategic_deployment_strategic_deployment_is_close`
-
-### 6.2 main_map.tscn
-
-- `TileMapLayer` 使用瓦片图集绘制草地（grass_green / grass_yellow 等）。
-- 内含 `NavigationRegion2D`（`NavigationPolygon` 矩形约 5207x3095），作为角色寻路区域。
-
----
-
-## 7. 数据格式规范
-
-### 7.1 角色数据（`DataManager.all_characters`）
-
-```gdscript
-var all_characters = {
-	"ColoredArchive.cat": {
-		"name": "cat",
-		"school": "ColoredArchive",
-		"speed": 250,
-		"hp": 100,
-		"icon": preload("res://assets/images/cat.png"),
-		"texture": preload("res://assets/images/cat.png"),
-	},
-	"ColoredArchive.Sunaookami Shiroko": {
-		# ... 结构同上（砂狼白子）
-	},
-}
-```
-
-**键命名规则**：`"拥有者.角色名"`（如 `"ColoredArchive.cat"`）。
-
-**字段说明**：
-
-| 字段 | 类型 | 说明 |
+| 单例 | 脚本 | 作用 |
 |------|------|------|
-| `name` | String | 显示名称 |
-| `school` | String | 所属（学校/阵营） |
-| `speed` | float | 移动速度 |
-| `hp` | int | 生命值 |
-| `icon` | Texture | 界面图标（预加载资源） |
-| `texture` | Texture | 角色贴图（预加载资源） |
+| `DataManager` | `game/assets/code/data_manager.gd` | 所有角色 / 战略配备的数据字典 |
+| `Mouse` | `game/assets/code/mouse.gd` | 全局鼠标样式控制（如 `Mouse.mouse_can_click()`） |
 
-### 7.2 战略配备数据（`DataManager.all_strategic_deployment`）
+---
 
-```gdscript
-var all_strategic_deployment = {
-	"ColoredArchive.reinforcements": {
-		"name": "增援",
-		"cd": 30,
-		"icon": preload("res://assets/images/reinforcements.png"),
-	},
-	# 其余：resupply / mg-43 / fast_resupply / mk-2 / L118
-}
-```
+## 4. 游戏机制与数值说明
 
-**字段说明**：
+> 本节内容基于 `updateplan.md` 的策划方案。部分数值仍在打磨中，以实际版本为准。
 
-| 字段 | 类型 | 说明 |
+### 4.1 生命值：HP 与结构值双体系
+
+单位拥有两套"生命"概念：
+
+| 体系 | 含义 | 特点 |
 |------|------|------|
-| `name` | String | 显示名称 |
-| `cd` | float/int | 冷却时间（秒） |
-| `icon` | Texture | 按钮图标（预加载资源） |
+| **HP（生命值）** | 单位的常规血量 | 被打掉后单位仍可能以受损状态存在 |
+| **结构值** | 单位的骨架/装甲结构完整性 | 结构值归零则单位彻底被摧毁 |
 
-### 7.3 存档格式（saves/new_save.json 示例）
+- 普通攻击主要削减 **HP**，对结构值影响有限。
+- 爆炸类 / 高穿甲攻击会同时威胁 **结构值**。
+- 设计上鼓励：轻火力压制"打伤"，重火力"拆解"。
 
-```json
-{
-	"save_name": "新的存档",
-	"save_id": 1515260,
-	"save_close": 1233,
-	"have_characters": ["Sunaookami_Shiroko"],
-	"point": 1200,
-	"roke": 1200,
-	"use_mods": [],
-	"create_time": "2025-9-21",
-	"kill_enemy": 0,
-	"reinforcements": 0,
-	"palytime": 1200
-}
-```
+### 4.2 护甲与穿甲
 
-> 说明：当前存档系统尚在测试阶段（`save_test.db` 为 SQLite 测试文件），字段含义以策划后续确认的为准。
+**护甲等级范围：0 ~ 12**。
 
----
+穿甲判定基于 `护甲 - 穿甲` 的差值：
 
-## 8. 输入映射
+| 护甲 − 穿甲 | 判定结果 |
+|-------------|----------|
+| ≥ 3 | 几乎完全免疫：仅造成 1 点结构伤害 |
+| = 2 | 伤害被大幅削弱：结构伤害 −50%，且该 50% 转为结构伤害 |
+| = 1 | 结构伤害 −25%，剩余 25% 转为结构伤害 |
+| = 0 | 伤害保持不变 |
+| ≤ −1 ~ ≤ −6 | 越打越疼：爆炸伤害依次降低 10% ~ 60%，但结构伤害依次增加 50% ~ 800% |
 
-以下输入动作在 `project.godot` 的 `[input]` 区段定义：
+**策划理解**：穿甲的意义是"有效瓦解装甲单位"；反过来，对无甲目标使用高穿甲武器反而会损失爆炸威力——所以选择合适的武器打合适的敌人很重要。
 
-| 动作名 | 默认按键 | 用途 |
-|--------|----------|------|
-| `w_down` | W | 相机向上移动 |
-| `a_down` | A | 相机向左移动 |
-| `s_down` | S | 相机向下移动 |
-| `d_down` | D | 相机向右移动 |
-| `mouse_left_down` | 鼠标左键 | 角色选中 / 下达移动指令 |
-| `mouse_right_down` | 鼠标右键 | （预留） |
-| `Tab_down` | Tab | 开关战略配备面板 |
-| `Esc_down` | Esc | （预留） |
-| `zoom_in` | 滚轮向上 | 相机放大 |
-| `zoom_out` | 滚轮向下 | 相机缩小 |
-| `F3_down` | F3 | 开关调试 HUD |
+### 4.3 任务与关卡
 
----
+**任务预算**：每场战斗有固定的任务预算（当前默认 `30000`），战略配备等资源消耗都会占用预算（见 `strategic_deployment.gd` 的 `cost`）。
 
-## 9. 策划数值附录
+**主线任务类型**（按策划案）：
 
-> 以下内容摘自 `updateplan.md`，为策划参考数值，尚未全部实现于代码。
+| 任务类型 | 目标 |
+|----------|------|
+| 闪击战 | 在限定时间内快速击溃敌人 |
+| 歼灭战 | 消灭全部敌军 |
+| 保卫战 | 保护友方目标不被摧毁 |
+| 发射航空火箭 | 护送/推进我方发射装置并完成发射 |
+| 运输物资 | 在指定路线上运送物资 |
 
-### 9.1 护甲等级参考表
-
-| 等级 | 类别 | 典型单位示例 |
-|------|------|--------------|
-| 0 | 无甲 | 平民、裸露设施 |
-| 1 | 轻甲 I | 侦察兵、轻型无人机 |
-| 2 | 轻甲 II | 标准步兵、突击兵 |
-| 3 | 中甲 I | 精英步兵、战术机甲 |
-| 4 | 中甲 II | 重装步兵、防爆盾兵 |
-| 5 | 重甲 I | 外骨骼装甲、重型机甲 |
-| 6 | 重甲 II | 超重型步兵、小型炮台 |
-| 7 | 轻型装甲车 / 自行火炮 | 装甲运兵车、自行反坦克炮 |
-| 8 | 主战坦克 | 标准主战坦克、中型坦克 |
-| 9 | 重型坦克 / 移动堡垒 | 重型突击坦克、巨型移动要塞 |
-| 10 | 堡垒 | 钢筋混凝土永备工事、要塞炮台 |
-| 11 | 地堡 | 地下指挥所、深层掩体 |
-| 12 | 地下工事 / 永固工事 | 核战避难所、山体要塞 |
-
-### 9.2 穿甲等级
-
-与护甲等级相同（0–12 级）。
-
-### 9.3 伤害计算机制
-
-单位拥有两套数值体系：
-
-- **血量（HP）**：有生命的单位才有 HP；`HP <= 0` 即死亡（无论剩余多少结构值）。
-- **护甲结构值（护甲耐久）**：没有生命的单位无 HP；结构值 `<= 0` 即死亡。
-
-子弹包含三类伤害：直击伤害、爆炸伤害（AOE）、结构值伤害。
-
-### 9.4 穿甲机制（护甲等级 − 穿甲等级）
-
-| 差值 | 效果 |
-|------|------|
-| `>= 3` | 只能对结构值造成 **1** 伤害（打不穿） |
-| `= 2` | 伤害 **-50%**，结构值伤害 **+50%**（快速碎甲） |
-| `= 1` | 伤害 **-25%**，结构值伤害 **-25%**（碎甲，造成部分伤害） |
-| `= 0` | 伤害不变，结构值伤害不变（正常伤害） |
-| `<= -1` | 爆炸伤害 **-10%**，结构值伤害 **+50%**（过穿） |
-| `<= -2` | 爆炸伤害 **-20%**，结构值伤害 **+100%**（过穿） |
-| `<= -3` | 爆炸伤害 **-30%**，结构值伤害 **+200%**（过穿） |
-| `<= -4` | 爆炸伤害 **-40%**，结构值伤害 **+400%**（过穿） |
-| `<= -5` | 爆炸伤害 **-50%**，结构值伤害 **+800%**（过穿） |
-| `<= -6` | 爆炸伤害 **-60%**，结构值伤害 **+800%**（过穿） |
-
-### 9.5 地图 Debuff
+**地图负面效果（Debuff）**：部分地图自带挑战性负面效果：
 
 | Debuff | 效果 |
 |--------|------|
-| 更远的机场 | 所有用到飞行器的战略配备抵达时间 +25% |
-| 更远的直升机场 | 所有用到直升机的战略配备抵达时间 +25% |
-| 复杂电磁环境 | 所有战略配备抵达时间 +15%；战略配备有 25% 几率呼叫失败 |
-| 沙尘暴 | 战争迷雾覆盖范围 +80%；单位可见范围 -80% |
-| 紧张的任务预算 | 初始任务预算 -20%；任务预算回复时间 +20%；每次回复的任务预算 -20% |
+| 更远机场 / 直升机场 | 增援抵达时间变长 |
+| 复杂电磁环境 | 部分电子类战略配备受影响 |
+| 沙尘暴 | 视野受限 |
+| 紧张任务预算 | 本关任务预算低于默认值 |
 
-### 9.6 主线任务类型
+### 4.4 角色基础属性（数据字典字段）
 
-- 摧毁所有机器人工厂（**闪击战**）
-- 消灭所有敌人（**歼灭战**）
-- 在数据传输完成之前保护信号塔（**保卫战**）
-- 发射航空火箭：填充航空燃料 → 启动发射场发电机 → 升起雷达塔
-- 运输目标物资
+每个角色在 `data_manager.gd` 的 `all_characters` 中注册，字段如下：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `name` | String | 显示名称 |
+| `school` | String | 所属学院（如 `ABYDOS`），可为空 |
+| `speed` | int | 移动速度（NavigationAgent2D 的最大速度） |
+| `hp` | int | 生命值 |
+| `icon` | String | 角色头像图标（资源路径字符串） |
+| `texture` | String | 角色主体贴图（资源路径字符串） |
+
+> **重要**：`icon` 与 `texture` 存的是 **`res://` 路径字符串**（如 `"res://assets/images/cat.png"`），不是 `preload()` 结果。脚本里通过 `load()` 加载（见 `character.gd`）。
 
 ---
 
-## 10. 扩展指南
+## 5. 内容扩展指南
 
-### 10.1 如何新增角色
+### 5.1 新增一个角色
 
-1. **准备贴图**：将角色贴图放入 `game/assets/images/`（建议 PNG，像素风）。
-2. **注册数据**：在 `game/assets/code/data_manager.gd` 的 `all_characters` 字典中新增键值对：
+**第 1 步：准备素材**（没有素材也能先跑通）
+
+把角色贴图（透明背景 PNG）放入 `game/assets/images/`，例如 `my_unit.png`。
+
+**第 2 步：在数据字典注册**
+
+编辑 `game/assets/code/data_manager.gd` 的 `all_characters`，在末尾追加：
 
 ```gdscript
-"ColoredArchive.新角色名": {
-	"name": "显示名",
-	"school": "ColoredArchive",
-	"speed": 250,          # 移动速度
-	"hp": 100,             # 生命值
-	"icon": preload("res://assets/images/新角色图标.png"),
-	"texture": preload("res://assets/images/新角色贴图.png"),
+"ColoredArchive.MyUnit":{
+    "name":"MyUnit",
+    "school":"ABYDOS",
+    "speed":160,
+    "hp":260,
+    "icon":"res://assets/images/my_unit.png",
+    "texture":"res://assets/images/my_unit.png",
 },
 ```
 
-3. **创建实例**：在需要生成角色的地方调用角色管理器：
+**第 3 步：在代码里创建角色**
+
+打开 `game/assets/code/character_manager.gd`，在 `_ready()` 里调用：
 
 ```gdscript
-# 在 character_manager.gd 或信号回调中
-create_character("ColoredArchive.新角色名", Vector2(100, 100), Vector2(1, 1))
+create_character("ColoredArchive.MyUnit", Vector2(683.0, 502.0), Vector2(1.0, 1.0))
 ```
 
-### 10.2 如何新增战略配备
+`create_character(id, position, scale)` 会：
 
-1. **准备图标**：将按钮图标放入 `game/assets/images/`。
-2. **注册数据**：在 `data_manager.gd` 的 `all_strategic_deployment` 字典中新增：
+1. 从 `DataManager.all_characters` 取出 `speed` / `hp` / `texture`；
+2. 实例化 `res://assets/scene/character.tscn`；
+3. 调用 `setup(...)` 注入参数，并加入场景树；
+4. 存入 `have_characters[id]` 字典方便管理。
+
+**第 4 步：确认导航**
+
+`character_manager.gd` 顶部有一个导出变量：
 
 ```gdscript
-"ColoredArchive.新配备名": {
-	"name": "显示名",
-	"cd": 30,             # 冷却时间（秒）
-	"icon": preload("res://assets/images/新配备图标.png"),
+@export var navigation_region2D: NavigationRegion2D
+```
+
+需要在编辑器里选中 `CharacterManager` 节点，在检查器中把 `navigation_region2D` 指向场景里的 `NavigationRegion2D`（例如 `map/NavigationRegion2D`）。否则角色无法寻路。
+
+**字段约定**：
+
+- `键` 的格式是 `拥有者.角色名`，如 `ColoredArchive.cat`。原版角色统一用 `ColoredArchive.` 前缀，MOD 角色用你自己的 MOD 名作前缀（见第 7 章）。
+- 键名全局唯一，不能与其他角色重复。
+
+### 5.2 新增一个战略配备
+
+**第 1 步：准备图标**（可选，未提供则沿用现有图标）
+
+图标放入 `game/assets/images/`，例如 `my_airdrop.png`。
+
+**第 2 步：在数据字典注册**
+
+编辑 `data_manager.gd` 的 `all_strategic_deployment`：
+
+```gdscript
+"ColoredArchive.my_airdrop":{
+    "name":"my_airdrop",
+    "cd":120,
+    "icon":"res://assets/images/my_airdrop.png"
 },
 ```
 
-3. **实现效果**：在 `strategic_deployment_button.gd` 的按钮 `pressed` 回调中编写调用逻辑（当前按钮只负责选中态管理，效果逻辑待开发）。
+**第 3 步：无需改按钮代码**
 
-### 10.3 如何新增地图
+`strategic_deployment_button.gd` 的 `create_button()` 会自动遍历 `DataManager.all_strategic_deployment`，为每一条数据生成一个按钮（64×64，纵向排列在战略配备面板左侧）。运行后按 `Tab` 即可看到新按钮。
 
-1. 在 `game/assets/scene/` 下创建新的地图场景（TileMapLayer + NavigationRegion2D）。
-2. 在 `main.gd` 的 `all_map` 列表中加入新地图名。
-3. 在 `start_game()` 的选图逻辑中接入对应场景加载。
+**字段约定**：
 
-### 10.4 MOD 系统说明
+| 字段 | 说明 |
+|------|------|
+| `name` | 战略配备显示名 |
+| `cd` | 冷却时间（秒），如 `90` / `160` |
+| `icon` | 按钮图标路径字符串（`load()` 加载） |
 
-`game/mods/` 目前仅有 `example_mod/example_mod.py`——这是一个 **Python 占位示例文件，没有任何实质作用**。项目曾在 v0.1.1 提及"添加了一个 modapi——water 和一个示例 mod"，但当前 MOD API 尚未实现。若开发 MOD 系统，建议在 `mods/` 下以独立目录存放，并通过加载器动态注册。
+**注意**：目前按钮只有"选中/取消选中"的表现层功能，具体效果（呼叫增援、补给等）尚未实现，选中的按钮暂时不会真的触发效果——这是当前版本的已知状态，欢迎一起完善。
 
-### 10.5 开发约定
+### 5.3 新增一张地图
 
-- 脚本路径一律使用 `res://` 前缀（如 `preload("res://assets/scene/character.tscn")`）。
-- 数据字典统一由 `DataManager` 管理，键名格式 `"拥有者.名称"`。
-- 输入动作统一在 `project.godot` 的 `[input]` 中定义，不要在代码中直接使用裸键码。
-- 新增可配置项优先使用 `@export` 以便在检查器中调整。
+地图系统当前以瓦片地图（`TileMapLayer`）实现，脚本在 `game/assets/code/map.gd`：
 
----
+- `map.gd` 提供 `get_boundaries()` 方法，根据瓦片尺寸与使用区域计算地图边界，供相机限位使用。
+- 主场景（`main.gd`）里有 `all_map = ["grass"]` 数组，任务开始时会随机选一张地图。
 
-## 11. 贡献与版本规范
+**扩展地图的步骤（建议流程）**：
 
-### 11.1 分支策略
+1. 复制现有地图场景（如 `main_map.tscn`）或新建 `TileMapLayer`；
+2. 用瓦片集铺好地形，确认瓦片尺寸与 `map.gd` 计算逻辑匹配；
+3. 配置 `NavigationRegion2D` 的可行走区域（角色寻路依赖它）；
+4. 在地图数据源里登记新地图的 id 与加载路径。
 
-- `master` / `develop` 分支；当前开发基于 `develop`。
-- 废弃的 Python 版本存放于 `python_old/`（曾在独立分支，已合并回主分支），不再维护。
+> 地图模块仍在早期阶段，如果你希望做新地图，建议先在 Issue 里与作者交流一次格式约定，避免返工。
 
-### 11.2 更新日志规范（game/update_log.md）
+### 5.4 多语言（i18n）
 
-每次修改代码后必须：
+- 语言文件位于 `game/assets/languages/`：`zh_cn.json`（简体中文）、`en.json`（英文）。
+- 文件结构采用 JSON 键值对形式（键名 + 翻译文本）。
+- 当前语言文件仍为空（多语言系统尚未启用），但约定已固定：**新增任何 UI 文本时，同步在两个 json 中登记相同键名**。
+- 示例（规划格式）：
 
-1. 在 `game/update_log.md` 顶部按版本号格式追加条目：
-
-```markdown
-# v0.1.7
-## 2026.XX.XX
-### [添加]
-- 新功能描述
-### [修改]
-- 修改描述
-### [修复]
-- 修复描述
+```json
+{
+  "task_budget": "任务预算"
+}
 ```
 
-2. 执行 `git add -A` 与 `git commit`，提交信息格式：`v版本号: 简短描述`（如 `v0.1.7: 添加XX功能`）。
+### 5.5 修改游戏设置
 
-### 11.3 问题记录规范
-
-测试中发现的问题记录在项目根目录 `issues.md` 中（如不存在则创建），问题解决后需更新对应状态（如 `- [x]` 表示已解决、`- [ ]` 表示未解决），示例见 `game/update_log.md` 中的"已知问题"区段。
-
----
-
-## 12. 已知问题与路线图
-
-### 12.1 当前已知问题（来自 update_log.md）
-
-- 战略配备按钮鼠标悬停交互反馈不足，玩家难以意识到按钮可点击。
-- 鼠标"可点击"状态的小绿点可见性不佳。
-
-### 12.2 规划中的功能
-
-- 敌人 AI 逻辑（`enemy.gd` 待实现）。
-- 战略配备的实际效果逻辑（当前仅有按钮 UI）。
-- 战略配备设置面板（`strategic_deployment_setting.gd` 待实现）。
-- 角色状态机完善（`character_state_machine_test.gd` 测试中）。
-- 存档系统完善。
-- 移动端兼容（`rendering_method="mobile"` 已就绪，后续可能出手机版）。
+| 想改什么 | 去哪改 |
+|----------|--------|
+| 窗口分辨率 | `game/project.godot` → `[display]` 区（当前 1920×1200） |
+| 输入按键 | `game/project.godot` → `[input]` 区（见附录 A） |
+| 最大帧率 / 垂直同步 | 编辑器右侧项目设置，运行中立即生效 |
+| 任务预算 | `strategic_deployment.gd` 的 `cost = 30000` |
+| 任务倒计时 | `main.gd` 的 `mission_countdown` |
 
 ---
 
-*文档维护：每次代码变更后请同步更新本文档对应章节，并更新 `game/update_log.md`。*
+## 6. 素材制作规范
+
+### 6.1 总体风格
+
+本项目为 **2D 像素风**。请保持以下原则：
+
+- 使用**透明背景 PNG** 作为角色/图标贴图（JPG 无透明通道，只适合地图等全幅贴图）。
+- 像素风角色建议在 `32×32` 左右的网格内绘制，放大后保持清晰锐利（关闭平滑）。
+- 素材尺寸尽量取 2 的幂或 8 的倍数，便于缩放与对齐。
+- 字体 / 音乐等资源放入后，Godot 会自动生成 `.import` 文件，**不要手动编辑或删除 `.import` 文件**。
+
+### 6.2 各类素材规格
+
+| 素材类型 | 推荐规格 | 参考现有资源 |
+|----------|----------|--------------|
+| 角色贴图（texture） | 透明 PNG，像素风 | `images/cat.png` |
+| 角色头像（icon） | 同贴图或正方形缩略图 | `images/cat.png` |
+| 战略配备按钮图标 | 64×64 正方形 | `images/reinforcements.png` |
+| 地图瓦片 | 正方形瓦片（如 32×32 / 64×64） | `images/grass_green.png`、`grass_yellow.png` |
+| 鼠标指针（普通） | 32×32；4K 大屏用 64×64 | `images/mouse_32x32.png`、`mouse_64x64.png` |
+| 鼠标指针（可点击态） | 同上，单独一套 | `images/mouse_selectable_32x32.png` 等 |
+| 选中标记 | 透明 PNG 环形/矩形框 | `images/character_selection_marker.png` |
+| 字体 | 需支持中文 | `fonts/Minecraft AE(支持中文).ttf` |
+| 音乐 | OGG 或 MP3 | `musics/[蔚蓝档案交响乐]Constant Moderato.mp3` |
+
+### 6.3 命名规范
+
+- 使用**小写字母 + 下划线**命名文件：`my_airdrop.png`，不要用空格、中文名或大写开头。
+- 路径全部使用 `res://` 相对路径写入数据字典。
+- 同一素材不要重复存放，统一放 `game/assets/images/`。
+
+### 6.4 鼠标样式机制
+
+- `Mouse` 单例负责全局鼠标切换。
+- 当鼠标悬停在可点击对象（角色、按钮）上时，调用 `Mouse.mouse_can_click()` 切换为可点击指针；离开时调用 `Mouse.mouse_can_not_click()`。
+- 如果你做新按钮/新角色，记得在 `mouse_entered` / `mouse_exited` 里连接这两个方法（参考 `strategic_deployment_button.gd` 与 `character.gd`）。
+
+---
+
+## 7. MOD 开发指南
+
+### 7.1 现状（如实说明）
+
+> **目前 MOD 加载机制尚未实现。** `game/mods/example_mod/example_mod.py` 是早期 pygame 时代遗留的 Python 占位示例（`import pygame`，无实际功能），它**不代表**未来 Godot 版 MOD 的形态。也就是说：今天你写一个 MOD 文件夹进去，游戏还不会自动加载它。
+
+因此，本章内容是**规划中的 MOD 规范与约定**，欢迎你提前按这个格式组织内容。等加载器落地后，这些规范将直接生效；你也完全可以在 Issue 里对规范提建议。
+
+### 7.2 未来 MOD 目录结构（规划约定）
+
+```
+game/mods/
+└── my_mod/                  # 每个 MOD 一个文件夹，文件夹名 = MOD 唯一 id
+    ├── manifest.json        # MOD 清单（必填）
+    ├── mod.gd               # MOD 入口脚本（可选，需要逻辑时）
+    ├── assets/              # MOD 自带素材
+    │   └── images/
+    └── data/                # MOD 数据（可选，用于声明式注册内容）
+```
+
+### 7.3 manifest.json（规划格式）
+
+```json
+{
+  "id": "my_mod",
+  "name": "我的模组",
+  "version": "0.1.0",
+  "author": "你的名字",
+  "description": "简单描述这个 MOD 做什么",
+  "requires": {
+    "godot": ">=4.5"
+  }
+}
+```
+
+字段说明：
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `id` | ✅ | 全局唯一，与文件夹名一致；同时作为数据字典键的前缀 |
+| `name` | ✅ | 玩家可见的 MOD 名 |
+| `version` | ✅ | 建议语义化版本 `主.次.修订` |
+| `author` | 建议 | 署名 |
+| `description` | 建议 | 一句话介绍 |
+| `requires` | 可选 | 引擎版本等依赖要求 |
+
+### 7.4 数据注册约定（规划）
+
+MOD 内容通过"**前缀 + 注册**"接入现有数据字典：
+
+1. 所有键使用 `你的MOD的id.内容名` 格式，例如 `my_mod.shiroko_swimsuit`，避免与 `ColoredArchive.` 原版内容或其他 MOD 冲突。
+2. 计划提供 `mod_register()` 钩子（在入口脚本 `mod.gd` 中实现），加载器按序调用：
+   - `mod_register_data()`：把角色/战略配备条目合并进 `DataManager.all_characters` / `all_strategic_deployment`；
+   - `mod_ready()`：加载完成后执行初始化逻辑。
+3. 同一钩子内，MOD 可以注册新角色、新战略配备、新地图与新 UI 文本键。
+
+**规划中的钩子签名示例**：
+
+```gdscript
+extends Node
+
+## 注册本 MOD 的数据（在 DataManager 加载后调用）
+func mod_register_data() -> void:
+    DataManager.all_characters["my_mod.hero"] = {
+        "name": "Hero",
+        "school": "",
+        "speed": 170,
+        "hp": 300,
+        "icon": "res://mods/my_mod/assets/images/hero.png",
+        "texture": "res://mods/my_mod/assets/images/hero.png",
+    }
+
+## MOD 初始化（数据注册完成后调用）
+func mod_ready() -> void:
+    print("my_mod loaded")
+```
+
+### 7.5 现在就能做的准备工作
+
+即使加载器还没实现，你现在就可以：
+
+1. 在 `game/mods/` 下新建你的 MOD 文件夹，按 7.2 的结构放好 `manifest.json` 和素材；
+2. 把角色/战略配备条目用**你的 MOD 前缀**写进数据字典（5.1 / 5.2 的方法），验证数据字段正确；
+3. 等加载器发布后，把条目从 `data_manager.gd` 迁移到你的 MOD 数据文件即可，无需改格式。
+
+### 7.6 示例 MOD 说明
+
+`game/mods/example_mod/example_mod.py` 当前内容只是 pygame 时代的占位符（`import pygame` + 注释），**没有实际功能**。未来的示例 MOD 将替换为符合 7.2~7.4 规范的 Godot 版本。你可以复制它作为自己 MOD 文件夹的模板雏形。
+
+---
+
+## 8. 常见问题
+
+### 8.1 我改了 `data_manager.gd` 没生效？
+
+- 检查语法：花括号、逗号是否配对（字典每一项以 `,` 结尾）。
+- 检查键名是否重复（重复的键会被覆盖）。
+- 检查资源路径：`res://` 开头的路径必须真实存在，`.import` 文件未被误删。
+- 在 Godot 编辑器里运行（`F5`），看底部「输出」面板是否有报错。
+
+### 8.2 角色创建了但不会动？
+
+大概率是 `navigation_region2D` 没在检查器里指定，或 `NavigationRegion2D` 没有烘焙可行走区域。参考 [5.1 第 4 步](#第-4-步确认导航)。
+
+### 8.3 角色贴图不显示 / 白块？
+
+- 确认 `texture` 指向的图片路径正确。
+- 角色贴图用 PNG（透明背景），JPG 没有透明通道。
+
+### 8.4 我能用游戏里的素材做自己的视频/图片吗？
+
+可以，前提是**不用于盈利**，且注意第 2 章的版权边界（角色设定版权归 NEXON / 上海星啸）。
+
+### 8.5 我想反馈 bug 或提建议？
+
+- 在 GitHub / Gitee 仓库提交 Issue（注明游戏版本号、复现步骤）。
+- 联系作者（B 站：三苗日记）。
+
+### 8.6 旧版 pygame 代码还能用吗？
+
+`python_old/` 是废弃版本（v0.1.3 之前的开发方式），目录结构已大改，**无法正常运行**，请勿使用。
+
+---
+
+## 附录 A：输入映射表
+
+定义于 `game/project.godot` → `[input]`。
+
+| 动作名 | 默认按键 | 用途 |
+|--------|----------|------|
+| `w_down` | W | 视角上移 |
+| `a_down` | A | 视角左移 |
+| `s_down` | S | 视角下移 |
+| `d_down` | D | 视角右移 |
+| `mouse_left_down` | 鼠标左键 | 选中角色 / 框选 / 下达移动指令 |
+| `mouse_right_down` | 鼠标右键 | （预留） |
+| `Tab_down` | Tab | 开关战略配备面板 |
+| `Esc_down` | Esc | （预留）退出 / 菜单 |
+| `zoom_in` | 滚轮上 | 视角放大 |
+| `zoom_out` | 滚轮下 | 视角缩小 |
+| `F3_down` | F3 | 调试 HUD 开关 |
+| `" "`（空格） | 无 | 空输入，预留 |
+
+---
+
+## 附录 B：常用路径速查
+
+| 用途 | 路径 |
+|------|------|
+| 角色 & 战略配备数据字典 | `game/assets/code/data_manager.gd` |
+| 角色创建逻辑 | `game/assets/code/character_manager.gd` |
+| 角色行为（状态机/移动/选中） | `game/assets/code/character.gd` |
+| 战略配备面板 | `game/assets/code/strategic_deployment.gd` |
+| 战略配备按钮生成 | `game/assets/code/strategic_deployment_button.gd` |
+| 主流程（地图选择/任务倒计时） | `game/assets/code/main.gd` |
+| 地图边界计算 | `game/assets/code/map.gd` |
+| 项目配置（输入/窗口/autoload） | `game/project.godot` |
+| 角色场景 | `game/assets/scene/character.tscn` |
+| 图片素材 | `game/assets/images/` |
+| 语言文件 | `game/assets/languages/zh_cn.json`、`en.json` |
+| 更新日志 | `game/update_log.md` |
+| 策划案 | `updateplan.md` |
+
+---
+
+*文档维护：每次大版本更新会同步修订本文档。如有出入以 `game/` 内实际代码与 `updateplan.md` 为准。*
