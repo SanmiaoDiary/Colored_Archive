@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://3wjpdb1x8tsv"]
+[gd_scene format=3 uid="uid://3wjpdb1x8tsv"]
 
 [ext_resource type="Texture2D" uid="uid://bex8cvna4fwpd" path="res://assets/images/reinforcements.png" id="2_uif81"]
 [ext_resource type="Script" uid="uid://1g0w0nf3e8bt" path="res://assets/code/strategic_deployment.gd" id="2_usbyn"]
@@ -8,13 +8,13 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_usbyn"]
 draw_center = false
 
-[node name="strategic deployment" type="Panel"]
+[node name="strategic deployment" type="Panel" unique_id=1854591036]
 offset_left = -120.0
 offset_bottom = 1198.5815
 theme_override_styles/panel = SubResource("StyleBoxFlat_usbyn")
 script = ExtResource("2_usbyn")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1461950589]
 layout_mode = 1
 offset_left = 0.815712
 offset_top = 5.5645523
@@ -25,7 +25,7 @@ text = "战略配备"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="cost" type="Label" parent="."]
+[node name="cost" type="Label" parent="." unique_id=653729928]
 layout_mode = 1
 offset_left = 2.846962
 offset_top = 43.923004
@@ -34,12 +34,21 @@ offset_bottom = 73.52298
 theme_override_styles/normal = ExtResource("3_usbyn")
 text = "任务预算:3000"
 
-[node name="strategic deployment button" type="TextureButton" parent="."]
-layout_mode = 1
-offset_left = 20.0
-offset_top = 95.0
-offset_right = 84.0
-offset_bottom = 159.0
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=55596053]
+layout_mode = 0
+offset_left = 18.19046
+offset_top = 80.17169
+offset_right = 94.003296
+offset_bottom = 1200.0889
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=1725786020]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=310450181]
+layout_mode = 2
+
+[node name="strategic deployment button" type="TextureButton" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1882292333]
+layout_mode = 2
 texture_normal = ExtResource("2_uif81")
 texture_pressed = ExtResource("2_uif81")
 texture_hover = ExtResource("2_uif81")

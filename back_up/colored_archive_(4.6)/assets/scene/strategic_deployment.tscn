@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3 uid="uid://3wjpdb1x8tsv"]
+
+[ext_resource type="Texture2D" uid="uid://bex8cvna4fwpd" path="res://assets/images/reinforcements.png" id="2_uif81"]
+[ext_resource type="Script" uid="uid://1g0w0nf3e8bt" path="res://assets/code/strategic_deployment.gd" id="2_usbyn"]
+[ext_resource type="StyleBox" uid="uid://dwi3mdea8wph1" path="res://assets/styles/strategic deployment text.tres" id="3_usbyn"]
+[ext_resource type="Script" uid="uid://djx53r11h3jp2" path="res://assets/code/strategic_deployment_button.gd" id="5_lsml7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_usbyn"]
+draw_center = false
+
+[node name="strategic deployment" type="Panel"]
+offset_left = -120.0
+offset_bottom = 1198.5815
+theme_override_styles/panel = SubResource("StyleBoxFlat_usbyn")
+script = ExtResource("2_usbyn")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+offset_left = 0.815712
+offset_top = 5.5645523
+offset_right = 77.28239
+offset_bottom = 38.564552
+theme_override_styles/normal = ExtResource("3_usbyn")
+text = "战略配备"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="cost" type="Label" parent="."]
+layout_mode = 1
+offset_left = 2.846962
+offset_top = 43.923004
+offset_right = 107.84696
+offset_bottom = 73.52298
+theme_override_styles/normal = ExtResource("3_usbyn")
+text = "任务预算:3000"
+
+[node name="strategic deployment button" type="TextureButton" parent="."]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 95.0
+offset_right = 84.0
+offset_bottom = 159.0
+texture_normal = ExtResource("2_uif81")
+texture_pressed = ExtResource("2_uif81")
+texture_hover = ExtResource("2_uif81")
+texture_disabled = ExtResource("2_uif81")
+texture_focused = ExtResource("2_uif81")
+script = ExtResource("5_lsml7")

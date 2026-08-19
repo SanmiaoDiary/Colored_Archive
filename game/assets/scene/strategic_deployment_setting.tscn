@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4wemge2jdrcg"]
+[gd_scene format=3 uid="uid://b4wemge2jdrcg"]
 
 [ext_resource type="Script" uid="uid://1i10tmwjxp7a" path="res://assets/code/strategic_deployment_setting.gd" id="1_eetp5"]
 
@@ -7,14 +7,14 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t6yfq"]
 bg_color = Color(0.6, 0.6, 0.6, 0.49803922)
 
-[node name="strategic deployment setting" type="Panel"]
+[node name="strategic deployment setting" type="Panel" unique_id=798432300]
 offset_left = 1920.0
 offset_right = 2117.0
 offset_bottom = 1200.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_eetp5")
 script = ExtResource("1_eetp5")
 
-[node name="title" type="Label" parent="."]
+[node name="title" type="Label" parent="." unique_id=1323007094]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 12.0
@@ -22,45 +22,48 @@ offset_right = 81.0
 offset_bottom = 35.0
 text = "战略配备配置："
 
-[node name="need cost" type="Label" parent="."]
+[node name="need cost" type="Label" parent="." unique_id=494860169]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 41.0
 offset_right = 161.0
 offset_bottom = 68.0
-text = "需要：2000任务预算"
+text = "任务预算需求：2000"
 
-[node name="reinforcements template" type="Panel" parent="."]
+[node name="reinforcements template" type="Panel" parent="." unique_id=1351846938]
 layout_mode = 0
 offset_top = 70.0
 offset_right = 198.0
 offset_bottom = 1201.8254
 theme_override_styles/panel = SubResource("StyleBoxFlat_t6yfq")
 
-[node name="character selection button" type="TextureButton" parent="reinforcements template"]
+[node name="character selection button" type="TextureButton" parent="reinforcements template" unique_id=1154985137]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 12.0
 offset_right = 56.0
 offset_bottom = 52.0
 
-[node name="resupply template" type="Panel" parent="."]
+[node name="resupply template" type="Panel" parent="." unique_id=1878777698]
 layout_mode = 0
 offset_top = 70.0
 offset_right = 198.0
 offset_bottom = 1201.8254
 theme_override_styles/panel = SubResource("StyleBoxFlat_t6yfq")
 
-[node name="weapon template" type="Panel" parent="."]
+[node name="weapon template" type="Panel" parent="." unique_id=2119154910]
 layout_mode = 0
 offset_top = 70.0
 offset_right = 198.0
 offset_bottom = 1201.8254
 theme_override_styles/panel = SubResource("StyleBoxFlat_t6yfq")
 
-[node name="aggressive template" type="Panel" parent="."]
+[node name="aggressive template" type="ScrollContainer" parent="." unique_id=495914351]
 layout_mode = 0
 offset_top = 70.0
 offset_right = 198.0
 offset_bottom = 1201.8254
 theme_override_styles/panel = SubResource("StyleBoxFlat_t6yfq")
+
+[node name="BoxContainer" type="BoxContainer" parent="aggressive template" unique_id=459116059]
+layout_mode = 2

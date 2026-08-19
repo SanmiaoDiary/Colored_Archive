@@ -1,6 +1,6 @@
 # ColoredArchive
 ## 基本信息
-[![三苗日记](https://img.shields.io/badge/bilibili-三苗日记-green?labelColor=blue&logo=bilibili&logoColor=white)](https://space.bilibili.com/670231840) [![GitHub 仓库](https://img.shields.io/badge/GitHub-Colored_Archive-181717?logo=github)](https://github.com/SanmiaoDiary/Colored_Archive) [![Gitee 仓库](https://img.shields.io/badge/Gitee-Colored_Archive-C71D23?logo=gitee)](https://gitee.com/sanmiaodiary/colored_archive)
+[![三苗日记](https://img.shields.io/badge/bilibili-三苗日记-green?labelColor=blue&logo=bilibili&logoColor=white)](https://space.bilibili.com/670231840) [![GitHub 仓库](https://img.shields.io/badge/GitHub-Colored_Archive-181717?logo=github)](https://github.com/SanmiaoDiary/Colored_Archive) [![Gitee 仓库](https://img.shields.io/badge/Gitee-Colored_Archive-C71D23?logo=gitee)](https://gitee.com/sanmiaodiary/colored_archive)  
 游戏中文名：彩色档案  
 游戏英文名：ColoredArchive  
 游戏缩写：CA
