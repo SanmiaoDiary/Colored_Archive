@@ -34,6 +34,19 @@ offset_bottom = 73.52298
 theme_override_styles/normal = ExtResource("3_usbyn")
 text = "任务预算:3000"
 
+[node name="strategic deployment button" type="TextureButton" parent="." unique_id=1882292333]
+layout_mode = 0
+offset_left = 18.19046
+offset_top = 80.17169
+offset_right = 82.19046
+offset_bottom = 144.17169
+texture_normal = ExtResource("2_uif81")
+texture_pressed = ExtResource("2_uif81")
+texture_hover = ExtResource("2_uif81")
+texture_disabled = ExtResource("2_uif81")
+texture_focused = ExtResource("2_uif81")
+script = ExtResource("5_lsml7")
+
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=55596053]
 layout_mode = 0
 offset_left = 18.19046
@@ -46,12 +59,3 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=310450181]
 layout_mode = 2
-
-[node name="strategic deployment button" type="TextureButton" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1882292333]
-layout_mode = 2
-texture_normal = ExtResource("2_uif81")
-texture_pressed = ExtResource("2_uif81")
-texture_hover = ExtResource("2_uif81")
-texture_disabled = ExtResource("2_uif81")
-texture_focused = ExtResource("2_uif81")
-script = ExtResource("5_lsml7")
