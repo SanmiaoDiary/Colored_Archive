@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cemux1eldrcxn"]
-
-[ext_resource type="PackedScene" uid="uid://dypwspmufnr0b" path="res://assets/scene/main_map.tscn" id="1_c3dew"]
-
-[node name="map" type="Node2D"]
-
-[node name="TileMapLayer" parent="." instance=ExtResource("1_c3dew")]
-metadata/_edit_lock_ = true
