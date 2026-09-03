@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://englfd5movtg" path="res://assets/scene/enemy.tscn" id="5_uu0fw"]
 [ext_resource type="Script" uid="uid://b0b7kjiiectpv" path="res://assets/code/gaming_camera_2d.gd" id="6_mqc3k"]
 [ext_resource type="PackedScene" uid="uid://631hs68lqp8t" path="res://assets/scene/mouse.tscn" id="7_mqc3k"]
-[ext_resource type="Script" uid="uid://da4s4dlhmbgl" path="res://assets/code/data_manager.gd" id="8_2xo41"]
 [ext_resource type="PackedScene" uid="uid://dgvuf0f7obx11" path="res://assets/scene/test_hud.tscn" id="10_bhk2f"]
 [ext_resource type="PackedScene" uid="uid://b4wemge2jdrcg" path="res://assets/scene/strategic_deployment_setting.tscn" id="10_l33ta"]
 [ext_resource type="PackedScene" uid="uid://3wjpdb1x8tsv" path="res://assets/scene/strategic_deployment.tscn" id="11_ld5aq"]
@@ -41,9 +40,6 @@ navigation_region2D = NodePath("../map/NavigationRegion2D")
 position = Vector2(958, 470)
 
 [node name="mouse" parent="." unique_id=348454240 instance=ExtResource("7_mqc3k")]
-
-[node name="data manager" type="Node" parent="." unique_id=776550989]
-script = ExtResource("8_2xo41")
 
 [node name="overlapping display" type="CanvasLayer" parent="." unique_id=1815382055]
 

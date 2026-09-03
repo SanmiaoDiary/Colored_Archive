@@ -24,6 +24,7 @@ config/icon="uid://cusmxhnfhco2b"
 
 Mouse="*res://assets/code/mouse.gd"
 DataManager="*res://assets/code/data_manager.gd"
+ModLoaderWater="*uid://dfwfii1btip8t"
 
 [display]
 
