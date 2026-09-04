@@ -1,1 +1,0 @@
-pyinstaller -F -w -i image/slanted_logo.ico main.py
