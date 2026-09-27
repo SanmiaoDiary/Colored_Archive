@@ -1,11 +1,12 @@
 # ColoredArchive 重构任务清单
 
 > 本文件记录项目当前需要完成的改造任务，按优先级排列。
-> 作者：SanmiaoDiary | 更新日期：2026-08
+> 综合仓库审查报告（2026-08）与重构计划。
+> 作者：SanmiaoDiary
 
 ---
 
-## P0 — 角色系统重构（影响最大，先做）
+## P0 — 致命问题（会导致运行错误）
 
 ### 任务 1 — 重写 `game/assets/code/character.gd`
 
@@ -37,7 +38,7 @@
 - 目前没有批量创建角色的接口，后续增援系统无法直接使用。
 
 **具体改动：**
-1. 将 `_ready()` 开头的清场循环提取为独立函数 `func clear_all_characters()`，保留代码供热加载调用，同时在 `_ready()` 中也调用一次（让注释说明用途）：
+1. 将 `_ready()` 开头的清场循环提取为独立函数 `func clear_all_characters()`，保留代码供热加载调用，同时在 `_ready()` 中也调用一次：
    ```gdscript
    func _ready() -> void:
        clear_all_characters()  # 防止热加载残留，保证初始状态干净
@@ -62,20 +63,59 @@
 
 ---
 
-### 任务 3 — 删除或归档 `game/assets/code/character_state_machine_test.gd`
+### 任务 3 — 删除 `game/assets/code/character_state_machine_test.gd`
 
 **理由：**
 - 该文件只有一行 `extends CharacterBody2D`，是旧状态机方案的测试残留，没有任何功能，留在代码库里会造成混淆。
-- 保留它会让人误以为这是正式代码的一部分。
 
-**具体改动：**
-- 直接删除该文件，或移动到 `back_up/` 目录中存档。
+**具体改动：** 直接删除该文件，或移动到 `back_up/` 目录中存档。
 
 ---
 
-## P1 — 清理死代码
+### 任务 4 — 修复 `export_presets.cfg`（多个问题）
 
-### 任务 4 — 精简 `game/assets/code/main.gd`
+**理由：**
+- **版本号过时**：`file_version` 和 `product_version` 均为 `0.1.3.0`，实际版本是 `0.1.6`，导出的 exe 元数据会显示错误版本号。
+- **导出路径过时**：Web 和 Windows 导出路径仍指向 `v0.1.3`。
+- **产品名称拼写错误**：`application/product_name="CorloredArchive"` 多了一个 `r`，应为 `"ColoredArchive"`。
+
+**具体改动：**
+1. 将 `application/file_version` 从 `0.1.3.0` 改为 `0.1.6.0`
+2. 将 `application/product_version` 从 `0.1.3.0` 改为 `0.1.6.0`
+3. 将 `application/product_name` 从 `"CorloredArchive"` 改为 `"ColoredArchive"`
+4. 更新 Web 导出路径：`ColoredArchive_Win_Client_v0.1.3.html` → `v0.1.6.html`
+5. 更新 Windows 导出路径：`ColoredArchive_Win_Client_v0.1.3.exe` → `v0.1.6.exe`
+6. 或者在 Godot 编辑器中打开 Project Settings → Application → Config → Version 统一修改后重新导出配置
+
+---
+
+---
+
+## P1 — 重要问题
+
+### 任务 5 — 修复 `push_all.bat`
+
+**理由：**
+- 当前内容是 `git push all develop`，`git push` 没有 `all` 这个参数，执行会报错。
+- 这个脚本是作者的日常推送工具，修好后能减少操作成本。
+
+**具体改动：** 将内容改为 `git push origin develop`
+
+---
+
+### 任务 6 — 处理 `gaming.tscn` 场景丢失问题
+
+**理由：**
+- `.godot/editor/` 目录下存在大量 `gaming.tscn-editstate` 和 `gaming.tscn-folding` 编辑器缓存文件，说明作者曾经在 Godot 编辑器中打开过 `gaming.tscn`，但该场景文件在 `assets/scene/` 下不存在。
+- 如果是误删，需要从 git 历史中找回；如果已不再需要，需要清理编辑器缓存文件。
+
+**具体改动：**
+- 方案 A（确认不再需要）：删除 `.godot/editor/` 下所有 `gaming.tscn-*` 相关文件
+- 方案 B（需要恢复）：用 `git log --diff-filter=D -- game/assets/scene/gaming.tscn` 查历史，用 `git checkout` 找回
+
+---
+
+### 任务 7 — 精简 `game/assets/code/main.gd`
 
 **理由：**
 - `const Character = preload(...)` 和 `func create_character()` 是旧版直接实例化角色的方式，现在角色由 `character_manager` 管理，这两处代码无人调用，属于死代码。
@@ -88,24 +128,62 @@
 
 ---
 
-### 任务 5 — 修复 `game/assets/code/gaming_camera_2d.gd`
+### 任务 8 — 修复 `game/assets/code/gaming_camera_2d.gd`
 
 **理由：**
 - 第 76 行 `map.get_boundaries()` 的返回值没有被接收或使用，属于无效调用，虽然不会报错但会让代码读者困惑。
 - 实际上 limit 已经在下面几行正确赋值，这行完全是多余的。
 
-**具体改动：**
-- 删除第 76 行的 `map.get_boundaries()` 调用（或其结果接收变量），或在注释中说明其用途。
+**具体改动：** 删除第 76 行的 `map.get_boundaries()` 调用。
 
 ---
 
-## P2 — 战略配备系统（让按钮真正生效）
+### 任务 9 — 修复 `.gitignore`
 
-### 任务 6 — 扩展 `game/assets/code/data_manager.gd` 中的战略配备数据
+**理由：**
+- `*.cfg` 规则会忽略 `export_presets.cfg`！这是导出配置，应该入库，否则换电脑开发会丢失导出设置。
+- `/addons/` 规则过于激进，会排除 `godot_ai` 和 `godot-git-plugin` 这两个项目正常运行所必需的插件。
+- 两条规则都会导致协作时丢失重要文件或引入不必要的文件。
+
+**具体改动：**
+```gitignore
+# 排除编辑器缓存（只排除 .godot 目录本身）
+.godot/
+.vscode/
+.codebuddy/
+
+# 排除生成文件
+*.bak
+*.tmp
+*.import/
+
+# 排除用户数据
+/saves/
+/mods/
+/log/
+/Release/
+
+# 排除旧版代码
+/python_old/
+back_up/
+
+# 排除推送脚本（内部工具）
+push_all.bat
+
+# 显式保留必要文件
+!export_presets.cfg
+!.gitignore
+```
+
+---
+
+## P2 — 战略配备系统
+
+### 任务 10 — 扩展 `game/assets/code/data_manager.gd` 中的战略配备数据
 
 **理由：**
 - 当前 `all_strategic_deployment` 每个条目只有 `name`/`cd`/`icon` 三个字段，缺少实现增援逻辑所需的关键数据：消耗多少预算、召唤哪个角色、从什么位置生成。
-- 所有图标都指向同一个 `reinforcements.png`，说明图标资源还没细化，但这不影响功能实现。
+- 所有图标都指向同一个 `reinforcements.png`，6 个不同配备无法区分。
 
 **具体改动：**
 为每个战略配备条目补充以下字段：
@@ -119,19 +197,20 @@
     "spawn_type": "near_selected",         # 新增：生成方式（near_selected / random_position）
 },
 ```
-其他所有条目（resupply、mg-43、fast_resupply 等）都补上相同字段。
+其他所有条目（resupply、mg-43、fast_resupply、mk-2、L118）都补上相同字段。同时为每个配备制作独立图标，替换统一的 `reinforcements.png`。
 
 ---
 
-### 任务 7 — 实现冷却和预算逻辑 `game/assets/code/strategic_deployment.gd`
+### 任务 11 — 实现冷却和预算逻辑 `game/assets/code/strategic_deployment.gd`
 
 **理由：**
 - 当前 `cost = 30000` 是硬编码值，没有增减机制，玩家无法感知预算变化。
 - `cd` 字段存了但没有任何倒计时逻辑，按钮可以随时无限使用。
+- 预算显示数值与代码不一致：`tscn` 中硬编码 `"任务预算:3000"`，`gd` 中 `var cost = 30000`，两处对不上。
 - 任务预算系统是 GAME_DESIGN.md 中设计的核心经济机制，不实现就无法形成策略深度。
 
 **具体改动：**
-1. 将 `cost` 改为动态变量，添加 `var mission_budget := 3000`（建议从 30000 降到合理值）
+1. 将 `cost` 改为动态变量，建议初始值 `var mission_budget := 3000`（与 tscn 中显示值对齐）
 2. 新增 `var cooldown_timers := {}` 字典，key 为战略配备 id，value 为剩余冷却秒数
 3. 在 `_process` 中每秒递减所有冷却计时器，归零后标记为就绪
 4. 新增 `func request_deployment(id: String) -> bool`：
@@ -143,7 +222,7 @@
 
 ---
 
-### 任务 8 — 实现按钮点击后的增援生成逻辑 `game/assets/code/strategic_deployment_button.gd`
+### 任务 12 — 实现按钮点击后的增援生成逻辑 `game/assets/code/strategic_deployment_button.gd`
 
 **理由：**
 - 当前按钮点击只触发了"选中/取消选中"的动画效果，没有调用任何游戏逻辑，点下去什么都不会发生。
@@ -159,9 +238,23 @@
 
 ---
 
+### 任务 13 — 实现 `strategic_deployment_setting.gd` 或移除无用场景
+
+**理由：**
+- `strategic_deployment_setting.gd` 只有一行 `extends Panel`，没有任何逻辑。
+- 对应场景 `strategic_deployment_setting.tscn` 在 `main.tscn` 中以 `visible = false` 加载，内部有"reinforcements template"、"resupply template"、"weapon template"等占位节点，但完全无法使用。
+- 如果后续要实现战略配备的配置面板，需要实现这个脚本；如果不需要，建议删除该场景及其在主场景中的引用，减少干扰。
+
+**具体改动：**
+- 决策：确认是否需要配置面板。
+- 如果需要：实现拖拽排序、费用调整等配置功能。
+- 如果不需要：从 `main.tscn` 中移除对该场景的引用，删除 `strategic_deployment_setting.tscn` 和空的 `strategic_deployment_setting.gd`。
+
+---
+
 ## P3 — 敌人系统
 
-### 任务 9 — 实现 `game/assets/code/enemy.gd`
+### 任务 14 — 实现 `game/assets/code/enemy.gd`
 
 **理由：**
 - 当前 enemy.gd 只有一个 `extends CharacterBody2D`，敌人完全没有行为逻辑。
@@ -177,7 +270,7 @@
 
 ---
 
-### 任务 10 — 在 `character.gd` 里加受击和死亡逻辑
+### 任务 15 — 在 `character.gd` 里加受击和死亡逻辑
 
 **理由：**
 - 当前角色没有 HP 损耗机制，`hp` 属性存了但从不使用。
@@ -199,7 +292,7 @@
 
 ## P4 — HUD 完善
 
-### 任务 11 — `game/assets/code/HUD.gd` 显示预算和冷却信息
+### 任务 16 — `game/assets/code/HUD.gd` 显示预算和冷却信息
 
 **理由：**
 - 当前 HUD 只显示任务倒计时，玩家看不到任务预算和战略配备冷却状态，信息不完整。
@@ -209,25 +302,51 @@
 1. 添加预算标签节点引用，绑定到 `strategic_deployment.mission_budget`
 2. 在 `_process` 中实时更新预算显示文本
 3. 可选：显示选中战略配备的剩余冷却时间
-4. 可选：角色血条显示（目前角色头上有血条，但 HUD 中没有汇总信息）
+
+---
+
+### 任务 17 — 精简 `game/assets/code/test_hud.gd`
+
+**理由：**
+- `str(int(Engine.get_frames_per_second()))` 中存在冗余的 `int()` 转换，`Engine.get_frames_per_second()` 返回 float，`str()` 会直接转成带小数的字符串，加 `int()` 反而多余且语义不清。
+
+**具体改动：**
+```gdscript
+# 改前
+var FPS = str(int(Engine.get_frames_per_second()))
+# 改后
+var fps: String = "%d" % Engine.get_frames_per_second()
+```
 
 ---
 
 ## P5 — 整理归档
 
-### 任务 12 — 清理 Python 旧版代码
+### 任务 18 — 清理 Python 旧版代码和构建脚本
 
 **理由：**
 - `python_old/` 文件夹中的代码基于 Pygame，与当前 Godot 版本完全不兼容，留在根目录会干扰新开发者理解项目结构。
-- README 已说明旧版本存放在 `python_older` 分支，`python_old/` 可以视为废弃内容。
+- `python_old/nuitka_build.bat` 和 `python_old/pyinstaller_build.bat` 是旧版打包脚本，已无意义。
 
 **具体改动：**
-- 将 `python_old/` 移入 `back_up/` 目录
-- 或在 `.gitignore` 中排除该目录并添加注释说明
+- 将 `python_old/` 整个目录移入 `back_up/`
+- 或直接删除 `python_old/` 及根目录下的构建 `.bat` 文件
 
 ---
 
-### 任务 13 — 更新 `game/update_log.md`
+### 任务 19 — 清理重复备份
+
+**理由：**
+- `back_up/` 下存在内容重复的备份：`colored-archive-(4.6)/` 和 `colored_archive_(4.6)/` 是两份不同的 4.6 备份（注意大小写不同），造成了冗余存储。
+
+**具体改动：**
+- 比较两份 4.6 备份的差异，保留更新的一份，删除重复的
+- 同理处理 4.7 备份（如果存在重复）
+- 最终只保留每个版本的最新存档
+
+---
+
+### 任务 20 — 更新 `game/update_log.md`
 
 **理由：**
 - 每次完成一批任务后记录更新日志是项目规范，方便追踪版本变更。
@@ -248,19 +367,21 @@
 ## 建议执行顺序
 
 ```
-任务1 → 任务2 → 任务3 → 任务4 → 任务5
+任务1 → 任务2 → 任务3 → 任务7 → 任务8 → 任务17
                                     ↓
                               验证：角色能正常选中、移动、显示
                                     ↓
-任务6 → 任务7 → 任务8 → 任务11（战略配备可呼出增援）
+任务4 → 任务5 → 任务6 → 任务9（修复致命/重要问题）
+                                    ↓
+任务10 → 任务11 → 任务12 → 任务13 → 任务16（战略配备可呼出增援）
                                     ↓
                               验证：预算扣除、冷却生效、角色生成
                                     ↓
-任务9 → 任务10（敌人出现、战斗形成）
+任务14 → 任务15（敌人出现、战斗形成）
                                     ↓
                               验证：能击杀敌人、角色会受伤死亡
                                     ↓
-任务12 → 任务13（清理归档）
+任务18 → 任务19 → 任务20（清理归档）
 ```
 
 每完成一个阶段，运行游戏验证后再进入下一个阶段，避免堆积问题。
