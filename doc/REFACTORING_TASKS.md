@@ -13,7 +13,7 @@
 **理由：**
 - 当前代码使用字典存储状态（`{"selection": false, "action": "", "move": false}`），`selection` 和 `action` 字段从未被使用，逻辑分散在多处难以维护。
 - `_process` 中调用 `move_and_slide()` 是错误做法，移动逻辑必须在 `_physics_process` 物理帧中执行。
-- `all_characters` 变量在每个角色实例中都存了一份副本，但从不使用，浪费内存。
+- `all_characters` 变量是重构时的残留：角色数据现在由 `character_manager` 通过 `setup()` 函数直接传入，角色节点自己持有这份引用没有任何用途，可以删除。
 - `_ready` 中使用 `await` 但不处理空 texture 路径，会导致 `Sunaookami Shiroko` 等无贴图角色运行时崩溃。
 - 缺少 `_exit_tree` 清理，调试导航线可能泄漏。
 
