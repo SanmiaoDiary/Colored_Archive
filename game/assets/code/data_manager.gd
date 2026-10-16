@@ -6,6 +6,7 @@ var all_characters = {#储存所有角色信息的字典
 		"school":"",
 		"speed":150,
 		"hp":200,
+		"duplicate_creation":true,#是否可以重复创建该角色
 		"icon":"res://assets/images/cat.png",#角色图标/头像（在角色列表中显示的角色缩略图）
 		"texture":"res://assets/images/cat.png",#角色贴图（在游戏中显示的角色主体形象）
 		},#嵌套字典保存单个角色的数据
@@ -14,6 +15,7 @@ var all_characters = {#储存所有角色信息的字典
 		"school":"ABYDOS",
 		"speed":160,
 		"hp":260,
+		"duplicate_creation":false,
 		"icon":"",
 		"texture":"",
 		},
@@ -50,5 +52,9 @@ var all_strategic_deployment = {#保存所有的战略配备的字典
 		"cd":90,
 		"icon":"res://assets/images/reinforcements.png"
 	},#
-	
+	"ColoredArchive.saturation bombardment":{#地毯式炮击
+		"name":"saturation bombardment",
+		"cd":560,
+		"icon":"res://assets/images/reinforcements.png"
+	}
 }

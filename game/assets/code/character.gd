@@ -12,8 +12,9 @@ var speed #角色的速度
 var hp#角色的血量
 var texture#角色的贴图
 	
-func setup(id:String,position:Vector2,scale:Vector2,hp,speed,texture,navigation_region2D) -> void:
-	self.id=id#赋值id
+func setup(class_id:String,id:String,position:Vector2,scale:Vector2,hp,speed,texture,navigation_region2D) -> void:
+	self.class_id=class_id#赋值实例的类id
+	self.id=id#赋值实例id
 	self.position=position#赋值位置
 	self.scale=scale#赋值缩放
 	self.hp=hp#赋值血量
@@ -26,7 +27,7 @@ func _ready() -> void:
 	await move_ready()#等待移动初始化完成
 	visible=true#显示角色
 	
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	state_machine()
 		
 var state={
@@ -93,4 +94,5 @@ func move():#移动函数
 		state["move"]=false#设置字典，告诉状态机角色现在没有在移动
 			
 func standby():#待机
-	return
+	velocity = Vector2.ZERO
+	move_and_slide()

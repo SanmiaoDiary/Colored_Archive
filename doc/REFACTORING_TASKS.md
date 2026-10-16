@@ -10,6 +10,7 @@
 
 ### 任务 1 — 重写 `game/assets/code/character.gd`
 
+- [x]（已解决）无需重写保留原版  
 **理由：**
 - 当前代码使用字典存储状态（`{"selection": false, "action": "", "move": false}`），`selection` 和 `action` 字段从未被使用，逻辑分散在多处难以维护。
 - `_process` 中调用 `move_and_slide()` 是错误做法，移动逻辑必须在 `_physics_process` 物理帧中执行。
@@ -73,6 +74,8 @@
 ---
 
 ### 任务 4 — 修复 `export_presets.cfg`（多个问题）
+
+- [x]（已解决）修改完成
 
 **理由：**
 - **版本号过时**：`file_version` 和 `product_version` 均为 `0.1.3.0`，实际版本是 `0.1.6`，导出的 exe 元数据会显示错误版本号。
