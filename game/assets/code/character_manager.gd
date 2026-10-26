@@ -58,39 +58,41 @@ func create_character(class_id:String,position:Vector2,scale:Vector2):#创建角
 					all_characters[class_id]["texture"],
 					navigation_region2D)#给场景节点传递实例化类的参数
 				father_node.add_child.call_deferred(new_character)#把场景节点添加到节点树
-				have_characters[class_id]=new_character#把实例字典保存在字典中方便管理
+				have_characters[class_id]={class_id:new_character}#把实例字典保存在字典中方便管理
 	else:
 		print("ColoredArchive[ERROR] character " +class_id+" not found!")#打印错误
 		return#返回
 	
+func found_character(id:String):#根据id寻找角色
+	for character_class in have_characters:#遍历字典寻找
+		var character_dic=have_characters[character_class]#获取角色类字典
+		if character_dic.has(id):#角色字典里面有这个角色吗？
+			if not character_dic[id] == null:#这个实例是空的吗？
+				return {"class_id":character_class,"character":character_dic[id]}#返回正确的子字典名称和角色实例
+			else:#如果这个实例是空的
+				print("CorloredArchive[WRAN] character "+id+" value is null")#打印警告
+				return "character "+id+" value is null"
+		else:
+			continue#继续查找下一个字典
+	print("ColoredArchive[ERROR] character " +id+" not found in this game!")#如果遍历完字典也没有找到就报错
+	return "character " +id+" not found in this game!"
+
 func delete_character(id):#删除角色
 	# 查找实例
-	if "_" in id:
-		var class_id = id.substr(0, id.index("_"))#取出角色类id
-		var value = have_characters[class_id][id]#取出这个实例
-		# 删除实例
-		if is_instance_valid(value):#检查是否有这个实例
-			value.queue_free()#安全的删除这个实例
-			have_characters[class_id].erase(id)#删除这个键值对
-		else:
-			print("ColoredArchive[ERROR] character " +id+" not found in this game!")#在这个战局里面没有找到这个角色
-			return#返回
-		if have_characters[class_id].is_empty():#如果这个角色类字典里面没有角色了
-			have_characters.erase(class_id)#删除这个空字典
+	var class_id_and_character:Dictionary=found_character(id)#获取返回的字典
+	var class_id = class_id_and_character["class_id"]#获取角色的类名
+	var character = class_id_and_character["character"]#获取角色实例
+	# 删除实例
+	if is_instance_valid(character):#检查是否有这个实例
+		character.queue_free()#安全的删除这个实例
+		have_characters[class_id].erase(id)#删除这个键值对
 	else:
-		var value = have_characters[id]#取出这个实例
-		# 删除实例
-		if is_instance_valid(value):#检查是否有这个实例
-			value.queue_free()#安全的删除这个实例
-			have_characters.erase(id)#删除这个键值对
-		else:
-			print("ColoredArchive[ERROR] character " +id+" not found in this game!")#在这个战局里面没有找到这个角色
-			return#返回
+		print("ColoredArchive[ERROR] character " +id+" not found in this game!")#在这个战局里面没有找到这个角色
+		return#返回
+	if have_characters[class_id].is_empty():#如果这个角色类字典里面没有角色了
+		have_characters.erase(class_id)#删除这个空字典
 
 func clear_all_characters():#删除所有的角色 热重载时使用
-	for key in have_characters.keys():#变量字典
-		if "_" in key:#如果这个key是可重复创建的角色
-			for character_id in have_characters[key]:#遍历这个角色字典
-				delete_character(character_id)#删除所有的字典里面的角色
-		else:
-			delete_character(key)#删除所有的字典里面的角色
+	for class_id in have_characters:#遍历角色字典
+		for id in class_id.keys():#遍历角色类字典
+			delete_character(id)#删除角色
