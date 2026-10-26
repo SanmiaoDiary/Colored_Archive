@@ -32,10 +32,8 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("Tab_down"):#如果按下tab键
 		if is_all_strategic_deployment_show == true:#如果战略配备面板正在显示
 			hide_all_strategic_deployment()#隐藏战略配备面板
-			print(position)
 		else:#否则
 			show_all_strategic_deployment()#显示战略配备面板
-			print(position)
 			
 func show_all_strategic_deployment():#显示战略配备面板
 	if is_all_strategic_deployment_show == true:#如果已经显示就什么也不干

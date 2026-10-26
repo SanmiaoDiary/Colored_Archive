@@ -1,6 +1,34 @@
 # Godot 4+ specific ignores
-.godot/
+
 /android/
 /Release/
-/backup/
+back_up/
 /saves/
+/addons/
+/python_old/
+/log/
+/mods/
+
+# 编辑器
+.godot/
+.vscode/
+.codebuddy/
+
+# 备份/编辑器临时文件
+*.bak
+*.uid
+*.gd.bak
+*.gd.uid
+*.tmp
+*.import
+*.editorconfig
+*.cfg
+
+# 自动推送脚本
+push_all.bat
+
+/game/addons/
+# 同步软件
+*.ffs_db
+*ffs_gui
+*.ffs_lock

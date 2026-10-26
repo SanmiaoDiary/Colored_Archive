@@ -11,7 +11,7 @@ height = 32.0
 [node name="character" type="CharacterBody2D"]
 script = ExtResource("1_rhor0")
 
-[node name="character" type="Sprite2D" parent="."]
+[node name="character texture" type="Sprite2D" parent="."]
 texture = ExtResource("1_w4huj")
 
 [node name="character collision" type="CollisionShape2D" parent="."]
@@ -29,6 +29,7 @@ shape = SubResource("CapsuleShape2D_rhor0")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 avoidance_enabled = true
 radius = 15.0
+debug_enabled = true
 
 [connection signal="mouse_entered" from="mouse" to="." method="_on_mouse_mouse_entered"]
 [connection signal="mouse_exited" from="mouse" to="." method="_on_mouse_mouse_exited"]

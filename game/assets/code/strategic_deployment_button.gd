@@ -79,7 +79,7 @@ class strategic_deployment_buttons extends TextureButton:#控制实例的类
 	func _on_mouse_exited():
 		Mouse.mouse_can_not_click()#调用全局单例设置鼠标为不可点击
 #----管理按钮实例----
-@onready var father_node=get_parent()#获取父节点
+@onready var father_node=$"../ScrollContainer/MarginContainer/VBoxContainer"#获取按钮实例的父节点
 var all_strategic_deployment = DataManager.all_strategic_deployment#从数据管理器处获得全部的战略配备字典
 var all_strategic_deployment_dict={}#保存所有战略配备名称的字典，用于区分各个实例
 var now_beselect#现在被按下的按钮
@@ -89,7 +89,8 @@ func create_button():#创建所有的按钮
 	var strategic_deployment_id#战略配备id
 	var strategic_deployment_data#战略配备信息
 	var new_button#临时保存新实例的变量
-	var button_index = 0#按钮索引
+	var new_control#临时保存新控制节点的变量
+	# var button_index = 0#按钮索引
 	var button_position:Vector2#按钮的位置
 	#var butthon_size:Vector2=Vector2(64,64)#设置按钮的大小
 	
@@ -97,17 +98,31 @@ func create_button():#创建所有的按钮
 	#创建所有的战略配备实例
 	for key in all_strategic_deployment:#遍历字典的键
 		strategic_deployment_id = key#保存key作为战略配备的id
+
+		new_control=Control.new()#创建一个新的控制节点作为按钮的父节点
+		new_control.custom_minimum_size=Vector2(114,84)#设置控制节点的最小大小
+		father_node.add_child(new_control)#设置控制节点的父节点/把控制节点添加到父节点
+
 		strategic_deployment_data=all_strategic_deployment[key]#获取当前这个战略配备的信息
-		button_position=Vector2(20,95+button_index*(size.y+20))#计算按钮位置
-		new_button=strategic_deployment_buttons.new(self,strategic_deployment_id,strategic_deployment_data["name"],strategic_deployment_data["cd"],button_position,strategic_deployment_data["icon"])#实例化按钮
-		father_node.add_child.call_deferred(new_button)#把实例添加到节点树
+		button_position=Vector2(0,10)#计算按钮位置
+		new_button=strategic_deployment_buttons.new(
+			self,
+			strategic_deployment_id,
+			strategic_deployment_data["name"],
+			strategic_deployment_data["cd"],
+			button_position,
+			strategic_deployment_data["icon"]
+		)#实例化按钮
+		new_button.size = Vector2(64,64)#设置按钮大小
+		new_control.add_child(new_button)#把按钮添加到控制节点里面
+		# father_node.add_child.call_deferred(new_button)#把实例添加到节点树
 		all_strategic_deployment_dict[key]=new_button#把key添加到战略配备字典里面方便管理
-		button_index+=1#让索引每次循环结束后自动加一
+		# button_index+=1#让索引每次循环结束后自动加一
 
 func delete_button():
-	for value in all_strategic_deployment_dict.values():#遍历字典
-		if is_instance_valid(value):#检查是否有这个实例
-			value.queue_free()#安全的删除所有的实例
+	for child in father_node.get_children():#遍历父节点的所有子节点
+		if child is Control:#检查子节点是否是控制节点
+			child.queue_free()#安全的删除所有的控制节点
 	all_strategic_deployment_dict.clear()#清除这个字典里面的所有内容
 	
 func control_button_only_one_can_select(buttonid):#控制按钮同时只能按下一个
