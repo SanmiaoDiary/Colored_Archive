@@ -2,7 +2,6 @@ extends Node
 #----角色管理器部分----
 var have_characters = {}#现在已经在这局游戏里面的角色的字典
 var new_character#存放新角色实例的变量
-var character_index=0#存放角色在自动里面的key的变量
 @onready var father_node=get_parent()#获取父节点
 const CHARACTER_SCENE = preload("res://assets/scene/character.tscn")#预加载角色场景（常量）
 var all_characters=DataManager.all_characters#获取所有角色的字典
@@ -67,17 +66,29 @@ func create_character(class_id:String,position:Vector2,scale:Vector2):#创建角
 func delete_character(id):#删除角色
 	# 查找实例
 	if "_" in id:
-		var class_id=[:id.index("_")]#取出角色类id
-		var value = have_characters[id][class_id]#取出这个实例
+		var class_id = id.substr(0, id.index("_"))#取出角色类id
+		var value = have_characters[class_id][id]#取出这个实例
+		# 删除实例
+		if is_instance_valid(value):#检查是否有这个实例
+			value.queue_free()#安全的删除这个实例
+			have_characters[class_id].erase(id)#删除这个键值对
+		else:
+			print("ColoredArchive[ERROR] character " +id+" not found in this game!")#在这个战局里面没有找到这个角色
+			return#返回
+		if have_characters[class_id].is_empty():#如果这个角色类字典里面没有角色了
+			have_characters.erase(class_id)#删除这个空字典
 	else:
 		var value = have_characters[id]#取出这个实例
-	# 删除实例
-	if is_instance_valid(value):#检查是否有这个实例
-		value.queue_free()#安全的删除这个实例
-		have_characters.erase(id)#删除这个键值对
+		# 删除实例
+		if is_instance_valid(value):#检查是否有这个实例
+			value.queue_free()#安全的删除这个实例
+			have_characters.erase(id)#删除这个键值对
+		else:
+			print("ColoredArchive[ERROR] character " +id+" not found in this game!")#在这个战局里面没有找到这个角色
+			return#返回
 
 func clear_all_characters():#删除所有的角色 热重载时使用
-	for key in have_characters:#变量字典
+	for key in have_characters.keys():#变量字典
 		if "_" in key:#如果这个key是可重复创建的角色
 			for character_id in have_characters[key]:#遍历这个角色字典
 				delete_character(character_id)#删除所有的字典里面的角色
