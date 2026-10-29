@@ -24,6 +24,18 @@ func setup(class_id:String,id:String,position:Vector2,scale:Vector2,hp,speed,tex
 	self.navigation_region2D=navigation_region2D#赋值navigation_region2D
 	
 func _ready() -> void:
+	# 调试输出
+	print("ColoredArchive[DEBUG] Character ready")
+	print("ColoredArchive[DEBUG] global_position = " + str(global_position))
+	print("ColoredArchive[DEBUG] $mouse global_position = " + str($mouse.global_position))
+	print("ColoredArchive[DEBUG] Area2D monitoring = " + str($mouse.monitoring))
+	print("ColoredArchive[DEBUG] Area2D monitorable = " + str($mouse.monitorable))
+	print("ColoredArchive[DEBUG] Area2D collision_layer = " + str($mouse.collision_layer))
+	print("ColoredArchive[DEBUG] Area2D collision_mask = " + str($mouse.collision_mask))
+	print("ColoredArchive[DEBUG] all_children = " + str(get_child_count()))
+	for i in get_child_count():
+		print("  child[" + str(i) + "] = " + str(get_child(i).name))
+
 	$"character texture".texture=load(self.texture)#加载角色贴图
 	await move_ready()#等待移动初始化完成
 	visible=true#显示角色
@@ -43,13 +55,18 @@ func state_machine():#状态机函数管理所有的状态
 	else:#如果状态为没有移动
 		standby()#待机
 		
-func _unhandled_input(event):#自动根据输入更改字典里面的状态
+func _input(event):#自动根据输入更改字典里面的状态
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:#如果按下了鼠标左键
+		print("ColoredArchive[DEBUG] clicked, mouse_in_character = " + str(mouse_in_character))
+		print("ColoredArchive[DEBUG] global_mouse_position = " + str(get_global_mouse_position()))
+		print("ColoredArchive[DEBUG] character global_position = " + str(global_position))
 		if mouse_in_character:#如果鼠标在角色上
 			if state["selection"]:#如果角色被选中
 				cancel_selection()
+				print("角色被取消选中")
 			else:#如果角色没有被选中
 				be_selection()
+				print("角色被选中")
 		else	:#如果鼠标不在角色上
 			if state["selection"]:#如果角色被选中
 				navigation_agent2D.target_position = get_global_mouse_position()#告诉导航系统目的地
@@ -58,10 +75,12 @@ func _unhandled_input(event):#自动根据输入更改字典里面的状态
 func be_selection():#被选中函数 控制角色被选中
 	state["selection"] = true#设置选中状态为是
 	get_node("character selection box").show()#显示角色被选中框
+	print("显示角色选中框")
 		
 func cancel_selection():#取消选中
 	state["selection"] = false#设置选中状态为否
 	get_node("character selection box").hide()#隐藏角色被选中框
+	print("隐藏角色选中框")
 	
 func _on_mouse_mouse_entered() -> void:#如果鼠标放在角色上
 	mouse_in_character = true#把鼠标在角色上设为true

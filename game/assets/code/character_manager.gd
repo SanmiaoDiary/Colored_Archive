@@ -70,7 +70,7 @@ func found_character(id:String):#根据id寻找角色
 			if not character_dic[id] == null:#这个实例是空的吗？
 				return {"class_id":character_class,"character":character_dic[id]}#返回正确的子字典名称和角色实例
 			else:#如果这个实例是空的
-				print("CorloredArchive[WRAN] character "+id+" value is null")#打印警告
+				print("ColoredArchive[WRAN] character "+id+" value is null")#打印警告
 				return "character "+id+" value is null"
 		else:
 			continue#继续查找下一个字典

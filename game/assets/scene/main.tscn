@@ -44,15 +44,18 @@ position = Vector2(958, 470)
 [node name="overlapping display" type="CanvasLayer" parent="." unique_id=1815382055]
 
 [node name="HUD" parent="overlapping display" unique_id=1302669134 instance=ExtResource("1_821e4")]
+mouse_filter = 1
 
 [node name="strategic deployment" parent="overlapping display" unique_id=1587788864 instance=ExtResource("11_ld5aq")]
 visible = false
 offset_bottom = 1200.0
+mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_ypxfr")
 
 [node name="strategic deployment setting" parent="overlapping display" unique_id=766296212 instance=ExtResource("10_l33ta")]
 visible = false
 offset_right = 2040.0
+mouse_filter = 1
 
 [node name="test HUD" parent="overlapping display" unique_id=1691194292 instance=ExtResource("10_bhk2f")]
 visible = false
@@ -60,6 +63,7 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 500.0
 offset_bottom = 100.0
+mouse_filter = 1
 
 [connection signal="start_a_game" from="." to="overlapping display/HUD" method="_on_main_start_a_game"]
 [connection signal="strategic_deployment_is_close" from="overlapping display/strategic deployment" to="overlapping display/HUD" method="_on_strategic_deployment_strategic_deployment_is_close"]
