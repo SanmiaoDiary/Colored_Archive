@@ -1,32 +1,32 @@
-[gd_scene load_steps=5 format=3 uid="uid://2ijmj0igyrpu"]
+[gd_scene format=3 uid="uid://2ijmj0igyrpu"]
 
-[ext_resource type="Script" uid="uid://dw6pf1r36xbjd" path="res://assets/code/character.gd" id="1_rhor0"]
-[ext_resource type="Texture2D" uid="uid://dfhklctvdbqk1" path="res://assets/images/cat.png" id="1_w4huj"]
-[ext_resource type="Texture2D" uid="uid://bbm1xdlri8wri" path="res://assets/images/character_selection_marker.png" id="1_x6quy"]
+[ext_resource type="Script" uid="uid://wtb2rwlcb5aa" path="res://assets/code/character.gd" id="1_rhor0"]
+[ext_resource type="Texture2D" uid="uid://ctc2c52rvtwge" path="res://assets/images/cat.png" id="1_w4huj"]
+[ext_resource type="Texture2D" uid="uid://vkvbv80unjos" path="res://assets/images/character_selection_marker.png" id="1_x6quy"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rhor0"]
 radius = 11.0
 height = 32.0
 
-[node name="character" type="CharacterBody2D"]
+[node name="character" type="CharacterBody2D" unique_id=429884725]
 script = ExtResource("1_rhor0")
 
-[node name="character texture" type="Sprite2D" parent="."]
+[node name="character texture" type="Sprite2D" parent="." unique_id=550644787]
 texture = ExtResource("1_w4huj")
 
-[node name="character collision" type="CollisionShape2D" parent="."]
+[node name="character collision" type="CollisionShape2D" parent="." unique_id=1061451827]
 shape = SubResource("CapsuleShape2D_rhor0")
 
-[node name="character selection box" type="Sprite2D" parent="."]
+[node name="character selection box" type="Sprite2D" parent="." unique_id=38698859]
 visible = false
 texture = ExtResource("1_x6quy")
 
-[node name="mouse" type="Area2D" parent="."]
+[node name="mouse" type="Area2D" parent="." unique_id=2122578785]
 
-[node name="mouse collision" type="CollisionShape2D" parent="mouse"]
+[node name="mouse collision" type="CollisionShape2D" parent="mouse" unique_id=967368029]
 shape = SubResource("CapsuleShape2D_rhor0")
 
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1987309121]
 avoidance_enabled = true
 radius = 15.0
 debug_enabled = true

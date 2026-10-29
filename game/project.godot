@@ -18,7 +18,7 @@ config/name="ColoredArchive"
 config/version="0.1.6"
 run/main_scene="uid://c7whaftv5t88s"
 config/features=PackedStringArray("4.7", "Mobile")
-config/icon="uid://cusmxhnfhco2b"
+config/icon="uid://h7hnumedcikg"
 
 [autoload]
 

@@ -94,5 +94,5 @@ func delete_character(id):#删除角色
 
 func clear_all_characters():#删除所有的角色 热重载时使用
 	for class_id in have_characters:#遍历角色字典
-		for id in class_id.keys():#遍历角色类字典
+		for id in have_characters[class_id].keys():#遍历角色类字典
 			delete_character(id)#删除角色

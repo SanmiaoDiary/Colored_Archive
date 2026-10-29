@@ -1,26 +1,46 @@
 [gd_scene format=3 uid="uid://btspk6g46kuye"]
 
+[ext_resource type="Script" uid="uid://bwqc3e6fjlns2" path="res://assets/code/terminal_manager_scroll_container.gd" id="1_007qh"]
 [ext_resource type="Script" uid="uid://cx412vf58h45q" path="res://assets/code/terminal_manager.gd" id="1_psaxy"]
 [ext_resource type="Script" uid="uid://dghy7aqswci0v" path="res://assets/code/information_line.gd" id="2_007qh"]
 
-[node name="ScrollContainer" type="ScrollContainer" unique_id=1530060387]
-anchors_preset = 15
-anchor_right = 1.0
+[node name="Control" type="Control" unique_id=875510322]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1605840605]
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1209598524]
+layout_mode = 0
+offset_left = 3.5430908
+offset_top = -1021.6004
+offset_right = 1003.5431
+offset_bottom = -21.600403
+script = ExtResource("1_007qh")
+metadata/_edit_use_anchors_ = true
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=1605840605]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2071689435]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=2071689435]
+custom_maximum_size = Vector2(500, -1)
 layout_mode = 2
+alignment = 2
 script = ExtResource("1_psaxy")
 
-[node name="information_line" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1957647312]
+[node name="information_line" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1957647312]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8039216, 0.80784315, 0.8235294, 1)
 script = ExtResource("2_007qh")
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer" unique_id=953412048]
-layout_mode = 2
+[node name="LineEdit" type="LineEdit" parent="." unique_id=953412048]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -16.5
+offset_right = 500.0
+offset_bottom = 14.5
+grow_vertical = 0
+scale = Vector2(1.0103687, 0.53247947)

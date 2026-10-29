@@ -7,6 +7,7 @@ var navigation_region2D: NavigationRegion2D#导出一个节点引用
 	
 	
 var mouse_in_character#鼠标是否在角色上
+var class_id:String#定义角色类id
 var id = ""#定义角色id
 var speed #角色的速度
 var hp#角色的血量
